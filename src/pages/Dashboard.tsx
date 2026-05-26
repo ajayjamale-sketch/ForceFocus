@@ -10,17 +10,12 @@ import {
   Plus,
   ArrowRight,
   Play,
-  Brain,
   BarChart3,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import StatsCard from "@/components/features/StatsCard";
-import {
-  FocusAreaChart,
-  ProductivityBarChart,
-  HabitCompletionChart,
-} from "@/components/features/ProductivityChart";
+
 import { formatMinutes } from "@/lib/utils";
 
 const mockTasks = [
@@ -178,36 +173,7 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* AI Coach Banner */}
-        {!isLoading && (
-          <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-5 flex items-center gap-4">
-            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Brain className="w-5 h-5 text-white" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-white font-semibold text-sm">AI Coach Insight</p>
-              <p className="text-blue-100 text-sm mt-0.5 truncate">
-                Your peak focus window is 9–11 AM. You have 47 minutes left — start your most complex task now.
-              </p>
-            </div>
-            <button
-              onClick={() => navigate("/dashboard/analytics")}
-              className="flex-shrink-0 px-4 py-2 bg-white/20 hover:bg-white/30 text-white text-sm font-medium rounded-xl transition-colors duration-200"
-            >
-              View Insights
-            </button>
-          </div>
-        )}
 
-        {/* Charts Row */}
-        {!isLoading && (
-          <div className="grid lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <FocusAreaChart />
-            </div>
-            <ProductivityBarChart />
-          </div>
-        )}
 
         {/* Tasks + Habits Row */}
         <div className="grid lg:grid-cols-2 gap-6">
@@ -294,63 +260,59 @@ export default function Dashboard() {
             </button>
           </div>
 
-          {/* Habits + Habit Chart */}
-          <div className="space-y-6">
-            <div className="bg-card border border-border rounded-2xl p-6">
-              <div className="flex items-center justify-between mb-5">
-                <div>
-                  <h3 className="text-base font-semibold text-foreground">Today's Habits</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {completedHabits.length}/{mockHabits.length} completed
-                  </p>
-                </div>
-                <Link
-                  to="/dashboard/habits"
-                  className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
-                >
-                  Manage <ArrowRight className="w-3 h-3" />
-                </Link>
+          {/* Habits */}
+          <div className="bg-card border border-border rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h3 className="text-base font-semibold text-foreground">Today's Habits</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {completedHabits.length}/{mockHabits.length} completed
+                </p>
               </div>
-
-              <div className="space-y-3">
-                {mockHabits.map((habit) => {
-                  const isDone = completedHabits.includes(habit.id);
-                  return (
-                    <div
-                      key={habit.id}
-                      className="flex items-center justify-between p-3 rounded-xl bg-muted/40 hover:bg-muted/70 transition-colors duration-150 cursor-pointer"
-                      onClick={() => toggleHabit(habit.id)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="text-xl">{habit.icon}</span>
-                        <div>
-                          <p className={`text-sm font-medium ${isDone ? "line-through text-muted-foreground" : "text-foreground"}`}>
-                            {habit.name}
-                          </p>
-                          <div className="flex items-center gap-1 mt-0.5">
-                            <Flame className="w-3 h-3 text-orange-400" />
-                            <span className="text-xs text-muted-foreground">{habit.streak} day streak</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
-                          isDone ? "bg-emerald-500 border-emerald-500" : "border-border"
-                        }`}
-                      >
-                        {isDone && (
-                          <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </svg>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <Link
+                to="/dashboard/habits"
+                className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
+              >
+                Manage <ArrowRight className="w-3 h-3" />
+              </Link>
             </div>
 
-            <HabitCompletionChart />
+            <div className="space-y-3">
+              {mockHabits.map((habit) => {
+                const isDone = completedHabits.includes(habit.id);
+                return (
+                  <div
+                    key={habit.id}
+                    className="flex items-center justify-between p-3 rounded-xl bg-muted/40 hover:bg-muted/70 transition-colors duration-150 cursor-pointer"
+                    onClick={() => toggleHabit(habit.id)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">{habit.icon}</span>
+                      <div>
+                        <p className={`text-sm font-medium ${isDone ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                          {habit.name}
+                        </p>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <Flame className="w-3 h-3 text-orange-400" />
+                          <span className="text-xs text-muted-foreground">{habit.streak} day streak</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                        isDone ? "bg-emerald-500 border-emerald-500" : "border-border"
+                      }`}
+                    >
+                      {isDone && (
+                        <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 

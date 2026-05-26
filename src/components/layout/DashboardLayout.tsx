@@ -25,15 +25,21 @@ import { cn, getInitials } from "@/lib/utils";
 import Navbar from "./Navbar";
 
 const sidebarItems = [
-  { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
-  { icon: Timer, label: "Focus", href: "/dashboard/focus" },
-  { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
-  { icon: Target, label: "Goals", href: "/dashboard/goals" },
-  { icon: Repeat, label: "Habits", href: "/dashboard/habits" },
-  { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
-  { icon: Users, label: "Team", href: "/dashboard/team" },
-  { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
-  { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
+  { section: "PRODUCTIVITY", items: [
+    { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
+    { icon: Timer, label: "Focus", href: "/dashboard/focus" },
+    { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
+    { icon: Target, label: "Goals", href: "/dashboard/goals" },
+  ]},
+  { section: "TRACKING", items: [
+    { icon: Repeat, label: "Habits", href: "/dashboard/habits" },
+    { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
+    { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
+  ]},
+  { section: "COLLABORATION", items: [
+    { icon: Users, label: "Team", href: "/dashboard/team" },
+    { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
+  ]},
 ];
 
 interface DashboardLayoutProps {
@@ -56,9 +62,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div
+      <Link
+        to="/"
         className={cn(
-          "flex items-center gap-2 px-4 py-5 border-b border-border",
+          "flex items-center gap-2 px-4 py-5 border-b border-border hover:bg-muted/50 transition-colors duration-200",
           isCollapsed && "justify-center"
         )}
       >
@@ -70,7 +77,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             Force<span className="text-blue-600">Focus</span>
           </span>
         )}
-      </div>
+      </Link>
 
       {/* User Summary */}
       {!isCollapsed && user && (
@@ -115,39 +122,50 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       )}
 
       {/* Navigation */}
-      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto scrollbar-hide">
-        {sidebarItems.map(({ icon: Icon, label, href }) => {
-          const isActive =
-            href === "/dashboard"
-              ? location.pathname === href
-              : location.pathname.startsWith(href);
+      <nav className="flex-1 py-4 px-3 space-y-4 overflow-y-auto scrollbar-hide">
+        {sidebarItems.map((group) => (
+          <div key={group.section}>
+            {!isCollapsed && (
+              <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                {group.section}
+              </div>
+            )}
+            <div className="space-y-1">
+              {group.items.map(({ icon: Icon, label, href }) => {
+                const isActive =
+                  href === "/dashboard"
+                    ? location.pathname === href
+                    : location.pathname.startsWith(href);
 
-          return (
-            <Link
-              key={href}
-              to={href}
-              onClick={() => setIsMobileSidebarOpen(false)}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group",
-                isCollapsed && "justify-center",
-                isActive
-                  ? "bg-blue-600 text-white shadow-premium"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
-              )}
-              title={isCollapsed ? label : undefined}
-            >
-              <Icon
-                className={cn(
-                  "w-4 h-4 flex-shrink-0 transition-transform duration-200",
-                  !isActive && "group-hover:scale-110"
-                )}
-              />
-              {!isCollapsed && (
-                <span className="text-sm font-medium">{label}</span>
-              )}
-            </Link>
-          );
-        })}
+                return (
+                  <Link
+                    key={href}
+                    to={href}
+                    onClick={() => setIsMobileSidebarOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group",
+                      isCollapsed && "justify-center",
+                      isActive
+                        ? "bg-blue-600 text-white shadow-premium"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    )}
+                    title={isCollapsed ? label : undefined}
+                  >
+                    <Icon
+                      className={cn(
+                        "w-4 h-4 flex-shrink-0 transition-transform duration-200",
+                        !isActive && "group-hover:scale-110"
+                      )}
+                    />
+                    {!isCollapsed && (
+                      <span className="text-sm font-medium">{label}</span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
       {/* Bottom Items */}
@@ -238,11 +256,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </button>
               <div className="hidden sm:block">
                 <h1 className="text-base font-semibold text-foreground">
-                  {sidebarItems.find((item) =>
-                    item.href === "/dashboard"
-                      ? location.pathname === item.href
-                      : location.pathname.startsWith(item.href)
-                  )?.label || "Dashboard"}
+                  {(() => {
+                    for (const group of sidebarItems) {
+                      const item = group.items.find((item) =>
+                        item.href === "/dashboard"
+                          ? location.pathname === item.href
+                          : location.pathname.startsWith(item.href)
+                      );
+                      if (item) return item.label;
+                    }
+                    return "Dashboard";
+                  })()}
                 </h1>
               </div>
             </div>
@@ -256,7 +280,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 Start Focus
               </Link>
               <button className="btn-ghost w-10 h-10 flex items-center justify-center rounded-xl relative">
-                <Bell className="w-4 h-4" />
+                <Bell className="w-6 h-6" />
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-blue-500 rounded-full" />
               </button>
               <Link to="/profile">

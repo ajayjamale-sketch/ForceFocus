@@ -36,7 +36,13 @@ import AnalyticsPage from "@/pages/AnalyticsPage";
 import TasksPage from "@/pages/TasksPage";
 import GoalsPage from "@/pages/GoalsPage";
 import HabitsPage from "@/pages/HabitsPage";
-import TeamPage from "@/pages/TeamPage";
+import TeamList from "@/pages/team/TeamList";
+import TeamCreate from "@/pages/team/TeamCreate";
+import TeamDetail from "@/pages/team/TeamDetail";
+import AdminLayout from "@/components/layout/AdminLayout";
+import UserList from "@/pages/admin/users/UserList";
+import UserEdit from "@/pages/admin/users/UserEdit";
+import { RequireRole } from "@/components/RequireRole";
 import WellnessPage from "@/pages/WellnessPage";
 import AchievementsPage from "@/pages/AchievementsPage";
 
@@ -97,7 +103,23 @@ export default function App() {
           <Route path="/dashboard/tasks" element={<TasksPage />} />
           <Route path="/dashboard/goals" element={<GoalsPage />} />
           <Route path="/dashboard/habits" element={<HabitsPage />} />
-          <Route path="/dashboard/team" element={<TeamPage />} />
+          {/* Team pages via module */}
+          <Route path="/team" element={<RequireRole allowedRoles={['team_member','team_manager','hr_admin','platform_admin']}><TeamList /></RequireRole>} />
+          <Route path="/team/create" element={<RequireRole allowedRoles={['team_manager','hr_admin','platform_admin']}><TeamCreate /></RequireRole>} />
+          <Route path="/team/:teamId" element={<RequireRole allowedRoles={['team_member','team_manager','hr_admin','platform_admin']}><TeamDetail /></RequireRole>} />
+
+          {/* Admin pages */}
+          <Route path="/admin/*" element={
+            <RequireRole allowedRoles={['hr_admin','platform_admin']}>
+              <AdminLayout>
+                <Routes>
+                  <Route path="users" element={<UserList />} />
+                  <Route path="users/:id/edit" element={<UserEdit />} />
+                </Routes>
+              </AdminLayout>
+            </RequireRole>
+          } />
+
           <Route path="/dashboard/wellness" element={<WellnessPage />} />
           <Route path="/dashboard/achievements" element={<AchievementsPage />} />
 

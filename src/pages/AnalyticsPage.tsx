@@ -55,12 +55,13 @@ export default function AnalyticsPage() {
           <StatsCard title="XP Earned" value="1,240" subtitle="This week" trend={15} icon={Award} iconColor="bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400" accentColor="from-yellow-500" />
         </div>
 
-        {/* Charts */}
+        {/* Charts Row 1 */}
         <div className="grid lg:grid-cols-2 gap-6">
           <FocusAreaChart />
           <ProductivityBarChart />
         </div>
 
+        {/* Charts Row 2 */}
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <MonthlyTrendChart />

@@ -1,9 +1,13 @@
+export type GlobalRole = "individual" | "student" | "team_member" | "team_manager" | "hr_admin" | "platform_admin";
+
 export interface User {
   id: string;
   name: string;
   email: string;
   avatar?: string;
-  role: "free" | "pro" | "team" | "enterprise";
+  role: GlobalRole;
+  teamIds: string[];
+  active: boolean;
   joinedAt: string;
   timezone: string;
   goals: string[];
@@ -11,6 +15,22 @@ export interface User {
   currentStreak: number;
   xp: number;
   level: number;
+}
+
+export interface TeamMember {
+  userId: string;
+  role: "member" | "lead" | "manager";
+  joinedAt: string;
+}
+
+export interface Team {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+  createdBy: string;
+  members: TeamMember[];
+  projects: any[];
 }
 
 export interface Task {
