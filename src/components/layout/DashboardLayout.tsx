@@ -25,93 +25,121 @@ import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import { cn, getInitials } from "@/lib/utils";
 import Navbar from "./Navbar";
-import NotificationPane from "./NotificationPane";
+import { NotificationPanel } from "./NotificationPanel";
 
 const sidebarItemsByRole = {
   individual: [
-    { section: "PRODUCTIVITY", items: [
-      { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
-      { icon: Timer, label: "Focus", href: "/dashboard/focus" },
-      { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
-      { icon: Target, label: "Goals", href: "/dashboard/goals" },
-    ]},
-    { section: "TRACKING", items: [
-      { icon: Repeat, label: "Habits", href: "/dashboard/habits" },
-      { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
-      { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
-    ]},
-    { section: "MOTIVATION", items: [
-      { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
-    ]},
+    {
+      section: "PRODUCTIVITY", items: [
+        { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
+        { icon: Timer, label: "Focus", href: "/dashboard/focus" },
+        { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
+        { icon: Target, label: "Goals", href: "/dashboard/goals" },
+      ]
+    },
+    {
+      section: "TRACKING", items: [
+        { icon: Repeat, label: "Habits", href: "/dashboard/habits" },
+        { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
+        { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
+      ]
+    },
+    {
+      section: "MOTIVATION", items: [
+        { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
+      ]
+    },
   ],
   student: [
-    { section: "STUDY FLOW", items: [
-      { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
-      { icon: Timer, label: "Focus", href: "/dashboard/focus" },
-      { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
-      { icon: Target, label: "Study Goals", href: "/dashboard/goals" },
-    ]},
-    { section: "TRACKING", items: [
-      { icon: Repeat, label: "Habits", href: "/dashboard/habits" },
-      { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
-      { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
-    ]},
-    { section: "MOTIVATION", items: [
-      { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
-    ]},
+    {
+      section: "STUDY FLOW", items: [
+        { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
+        { icon: Timer, label: "Focus", href: "/dashboard/focus" },
+        { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
+        { icon: Target, label: "Study Goals", href: "/dashboard/goals" },
+      ]
+    },
+    {
+      section: "TRACKING", items: [
+        { icon: Repeat, label: "Habits", href: "/dashboard/habits" },
+        { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
+        { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
+      ]
+    },
+    {
+      section: "MOTIVATION", items: [
+        { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
+      ]
+    },
   ],
   team_member: [
-    { section: "WORKSPACE", items: [
-      { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
-      { icon: Timer, label: "Focus", href: "/dashboard/focus" },
-      { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
-      { icon: Users, label: "Team Space", href: "/dashboard/team" },
-    ]},
-    { section: "TRACKING", items: [
-      { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
-      { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
-      { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
-    ]},
+    {
+      section: "WORKSPACE", items: [
+        { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
+        { icon: Timer, label: "Focus", href: "/dashboard/focus" },
+        { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
+        { icon: Users, label: "Team Space", href: "/dashboard/team" },
+      ]
+    },
+    {
+      section: "TRACKING", items: [
+        { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
+        { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
+        { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
+      ]
+    },
   ],
   team_manager: [
-    { section: "LEADERSHIP", items: [
-      { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
-      { icon: Timer, label: "Focus", href: "/dashboard/focus" },
-      { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
-      { icon: Target, label: "Goals", href: "/dashboard/goals" },
-      { icon: Users, label: "Team Space", href: "/dashboard/team" },
-    ]},
-    { section: "TRACKING", items: [
-      { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
-      { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
-      { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
-    ]},
+    {
+      section: "LEADERSHIP", items: [
+        { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
+        { icon: Timer, label: "Focus", href: "/dashboard/focus" },
+        { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
+        { icon: Target, label: "Goals", href: "/dashboard/goals" },
+        { icon: Users, label: "Team Space", href: "/dashboard/team" },
+      ]
+    },
+    {
+      section: "TRACKING", items: [
+        { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
+        { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
+        { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
+      ]
+    },
   ],
   hr_admin: [
-    { section: "ORGANIZATION", items: [
-      { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
-      { icon: Users, label: "Team Space", href: "/dashboard/team" },
-      { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
-      { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
-    ]},
-    { section: "OPERATIONS", items: [
-      { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
-      { icon: Target, label: "Goals", href: "/dashboard/goals" },
-      { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
-    ]},
+    {
+      section: "ORGANIZATION", items: [
+        { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
+        { icon: Users, label: "Team Space", href: "/dashboard/team" },
+        { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
+        { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
+      ]
+    },
+    {
+      section: "OPERATIONS", items: [
+        { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
+        { icon: Target, label: "Goals", href: "/dashboard/goals" },
+        { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
+      ]
+    },
   ],
   platform_admin: [
-    { section: "PLATFORM", items: [
-      { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
-      { icon: Users, label: "Team Space", href: "/dashboard/team" },
-      { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
-      { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
-    ]},
-    { section: "ADMIN", items: [
-      { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
-      { icon: Target, label: "Goals", href: "/dashboard/goals" },
-      { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
-    ]},
+    {
+      section: "PLATFORM", items: [
+        { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
+        { icon: Users, label: "Team Space", href: "/dashboard/team" },
+        { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
+        { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
+      ]
+    },
+    {
+      section: "ADMIN", items: [
+        { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
+        { icon: Target, label: "Goals", href: "/dashboard/goals" },
+        { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
+      ]
+    },
   ],
 };
 
@@ -122,7 +150,6 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
@@ -131,7 +158,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/");
   };
 
   const SidebarContent = () => (
@@ -367,17 +394,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 aria-label="Toggle theme"
                 title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
               >
-                {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                {theme === "dark" ? <Sun className="w-7 h-7" /> : <Moon className="w-5 h-5" />}
               </button>
-              <button
-                onClick={() => setIsNotificationsOpen((open) => !open)}
-                className="btn-ghost w-11 h-11 flex items-center justify-center rounded-xl relative"
-                aria-label="Notifications"
-                title="Notifications"
-              >
-                <Bell className="w-5 h-5" />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-blue-500 rounded-full" />
-              </button>
+              <NotificationPanel />
               <Link to="/profile" aria-label="View profile">
                 {user?.avatar ? (
                   <img
@@ -400,11 +419,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           {children}
         </main>
       </div>
-
-      <NotificationPane
-        open={isNotificationsOpen}
-        onClose={() => setIsNotificationsOpen(false)}
-      />
     </div>
   );
 }

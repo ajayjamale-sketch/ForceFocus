@@ -88,33 +88,33 @@ export default function Pricing() {
           </p>
 
           {/* Billing Toggle */}
-          <div className="inline-flex items-center gap-3 bg-white/70 dark:bg-white/10 rounded-xl p-1 border border-border dark:border-white/20">
-            <button
-              onClick={() => setBilling("monthly")}
-              className={cn(
-                "px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-                billing === "monthly"
-                  ? "bg-white text-gray-900 shadow"
-                  : "text-gray-300 hover:text-white"
-              )}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setBilling("yearly")}
-              className={cn(
-                "px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2",
-                billing === "yearly"
-                  ? "bg-white text-gray-900 shadow"
-                  : "text-gray-300 hover:text-white"
-              )}
-            >
-              Yearly
-              <span className="px-1.5 py-0.5 bg-emerald-500 text-white text-xs rounded-full font-bold">
-                -33%
-              </span>
-            </button>
-          </div>
+          <div className="inline-flex items-center gap-3 bg-muted rounded-xl p-1 border border-border">
+  <button
+    onClick={() => setBilling("monthly")}
+    className={cn(
+      "px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+      billing === "monthly"
+        ? "bg-background text-foreground shadow-sm"
+        : "text-muted-foreground hover:text-foreground"
+    )}
+  >
+    Monthly
+  </button>
+  <button
+    onClick={() => setBilling("yearly")}
+    className={cn(
+      "px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2",
+      billing === "yearly"
+        ? "bg-background text-foreground shadow-sm"
+        : "text-muted-foreground hover:text-foreground"
+    )}
+  >
+    Yearly
+    <span className="px-1.5 py-0.5 bg-emerald-500 text-white text-xs rounded-full font-bold">
+      -33%
+    </span>
+  </button>
+</div>
         </div>
       </section>
 

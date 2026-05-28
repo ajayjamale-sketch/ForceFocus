@@ -4,7 +4,7 @@ import { Users, Settings, Shield, ChevronLeft, ChevronRight, LogOut, LayoutDashb
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import { cn, getInitials } from "@/lib/utils";
-import NotificationPane from "./NotificationPane";
+import { NotificationPanel } from "./NotificationPanel";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -20,7 +20,6 @@ const sidebarItems = [
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
@@ -28,7 +27,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/");
   };
 
   const SidebarContent = () => (
@@ -170,15 +169,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               >
                 {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
-              <button
-                onClick={() => setIsNotificationsOpen((open) => !open)}
-                className="btn-ghost w-11 h-11 flex items-center justify-center rounded-xl relative"
-                title="Notifications"
-                aria-label="Notifications"
-              >
-                <Bell className="w-5 h-5" />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-blue-500 rounded-full" />
-              </button>
+              <NotificationPanel />
               <Link to="/profile">
                 {user?.avatar ? (
                   <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full object-cover border border-border" />
@@ -194,11 +185,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
         <main className="flex-1 p-4 sm:p-6 overflow-auto">{children}</main>
       </div>
-
-      <NotificationPane
-        open={isNotificationsOpen}
-        onClose={() => setIsNotificationsOpen(false)}
-      />
     </div>
   );
 }

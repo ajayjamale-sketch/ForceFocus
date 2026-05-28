@@ -20,13 +20,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { cn, getInitials } from "@/lib/utils";
 import { NAV_ITEMS } from "@/lib/constants";
 import { toast } from "sonner";
-import NotificationPane from "./NotificationPane";
-
+import { NotificationPanel } from "./NotificationPanel";
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   const { theme, toggleTheme } = useTheme();
   const { user, isAuthenticated, logout } = useAuth();
@@ -50,7 +48,6 @@ export default function Navbar() {
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setIsUserMenuOpen(false);
-    setIsNotificationsOpen(false);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -71,17 +68,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
-  };
-
-  const handleNotificationsClick = () => {
-    if (!isAuthenticated) {
-      toast.info("Sign in to view your notifications.");
-      navigate("/login");
-      return;
-    }
-
-    setIsNotificationsOpen((open) => !open);
+    navigate("/");
   };
 
   return (
@@ -148,16 +135,7 @@ export default function Navbar() {
             {isAuthenticated ? (
               <>
                 {/* Notifications */}
-                <button
-                  onClick={handleNotificationsClick}
-                  className="btn-ghost w-12 h-12 flex items-center justify-center rounded-2xl relative hover:scale-105 transition-all duration-200"
-                  aria-label="Notifications"
-                  title="Notifications"
-                >
-                  <Bell className="w-6 h-6" />
-
-                  <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-blue-500 rounded-full animate-pulse" />
-                </button>
+                <NotificationPanel />
 
                 {/* Dashboard */}
                 <Link
@@ -374,10 +352,6 @@ export default function Navbar() {
         </div>
       )}
 
-      <NotificationPane
-        open={isNotificationsOpen}
-        onClose={() => setIsNotificationsOpen(false)}
-      />
     </nav>
   );
 }

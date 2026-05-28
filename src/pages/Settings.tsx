@@ -198,13 +198,13 @@ export default function Settings() {
     localStorage.removeItem(`ff_user_${user?.id}`);
     logout();
     toast.success("Account data cleared");
-    navigate("/login");
+    navigate("/");
   };
 
   const handleLogout = () => {
     logout();
     toast.success("Logged out");
-    navigate("/login");
+    navigate("/");
   };
 
   if (!user) return null;

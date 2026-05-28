@@ -141,7 +141,7 @@ export default function Features() {
             <Link to="/register" className="btn-primary inline-flex items-center gap-2">
               Start Free Trial <ArrowRight className="w-4 h-4" />
             </Link>
-            <button className="px-6 py-3 border border-white/20 text-white rounded-xl hover:bg-white/10 transition-colors font-medium inline-flex items-center gap-2">
+            <button className="px-6 py-3 border border-primary text-primary rounded-xl hover:bg-primary/10 transition-colors font-medium inline-flex items-center gap-2">
               <Play className="w-4 h-4" /> Watch Demo
             </button>
           </div>
