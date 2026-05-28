@@ -39,9 +39,13 @@ import HabitsPage from "@/pages/HabitsPage";
 import TeamList from "@/pages/team/TeamList";
 import TeamCreate from "@/pages/team/TeamCreate";
 import TeamDetail from "@/pages/team/TeamDetail";
+import TeamPage from "@/pages/TeamPage";
 import AdminLayout from "@/components/layout/AdminLayout";
 import UserList from "@/pages/admin/users/UserList";
 import UserEdit from "@/pages/admin/users/UserEdit";
+import AdminRoles from "@/pages/admin/AdminRoles";
+import AdminSettings from "@/pages/admin/AdminSettings";
+import AdminDashboard from "@/pages/admin/AdminDashboard";
 import { RequireRole } from "@/components/RequireRole";
 import WellnessPage from "@/pages/WellnessPage";
 import AchievementsPage from "@/pages/AchievementsPage";
@@ -103,25 +107,20 @@ export default function App() {
           <Route path="/dashboard/tasks" element={<TasksPage />} />
           <Route path="/dashboard/goals" element={<GoalsPage />} />
           <Route path="/dashboard/habits" element={<HabitsPage />} />
+          <Route path="/dashboard/wellness" element={<WellnessPage />} />
+          <Route path="/dashboard/achievements" element={<AchievementsPage />} />
+          <Route path="/dashboard/team" element={<RequireRole allowedRoles={['team_member','team_manager','hr_admin','platform_admin']}><TeamPage /></RequireRole>} />
           {/* Team pages via module */}
           <Route path="/team" element={<RequireRole allowedRoles={['team_member','team_manager','hr_admin','platform_admin']}><TeamList /></RequireRole>} />
           <Route path="/team/create" element={<RequireRole allowedRoles={['team_manager','hr_admin','platform_admin']}><TeamCreate /></RequireRole>} />
           <Route path="/team/:teamId" element={<RequireRole allowedRoles={['team_member','team_manager','hr_admin','platform_admin']}><TeamDetail /></RequireRole>} />
 
           {/* Admin pages */}
-          <Route path="/admin/*" element={
-            <RequireRole allowedRoles={['hr_admin','platform_admin']}>
-              <AdminLayout>
-                <Routes>
-                  <Route path="users" element={<UserList />} />
-                  <Route path="users/:id/edit" element={<UserEdit />} />
-                </Routes>
-              </AdminLayout>
-            </RequireRole>
-          } />
-
-          <Route path="/dashboard/wellness" element={<WellnessPage />} />
-          <Route path="/dashboard/achievements" element={<AchievementsPage />} />
+          <Route path="/admin/dashboard" element={<RequireRole allowedRoles={['hr_admin','platform_admin']}><AdminLayout><AdminDashboard /></AdminLayout></RequireRole>} />
+          <Route path="/admin/users" element={<RequireRole allowedRoles={['hr_admin','platform_admin']}><AdminLayout><UserList /></AdminLayout></RequireRole>} />
+          <Route path="/admin/users/:id/edit" element={<RequireRole allowedRoles={['hr_admin','platform_admin']}><AdminLayout><UserEdit /></AdminLayout></RequireRole>} />
+          <Route path="/admin/roles" element={<RequireRole allowedRoles={['hr_admin','platform_admin']}><AdminLayout><AdminRoles /></AdminLayout></RequireRole>} />
+          <Route path="/admin/settings" element={<RequireRole allowedRoles={['hr_admin','platform_admin']}><AdminLayout><AdminSettings /></AdminLayout></RequireRole>} />
 
           {/* Account pages */}
           <Route path="/profile" element={<Profile />} />

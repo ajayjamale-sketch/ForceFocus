@@ -50,27 +50,24 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#0A0F1E] text-gray-300 border-t border-white/10">
-      {/* Main Footer */}
+    <footer className="bg-card text-foreground border-t border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-6 gap-12">
-          {/* Brand Column */}
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 group mb-4">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center">
                 <Zap className="w-4 h-4 text-white" />
               </div>
-              <span className="font-display font-bold text-xl text-white">
-                Force<span className="text-blue-400">Focus</span>
+              <span className="font-display font-bold text-xl text-foreground">
+                Force<span className="text-blue-600">Focus</span>
               </span>
             </Link>
-            <p className="text-sm text-gray-400 leading-relaxed mb-6 max-w-xs">
+            <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-xs">
               AI-powered productivity platform helping 2.4M+ professionals achieve deep work, build lasting habits, and perform at their peak every day.
             </p>
 
-            {/* Newsletter */}
             <div>
-              <p className="text-sm font-semibold text-white mb-3">
+              <p className="text-sm font-semibold text-foreground mb-3">
                 Get productivity insights
               </p>
               <form onSubmit={handleSubscribe} className="flex gap-2">
@@ -79,7 +76,7 @@ export default function Footer() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
-                  className="flex-1 px-3 py-2.5 rounded-lg bg-white/10 border border-white/10 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 min-w-0"
+                  className="flex-1 px-3 py-2.5 rounded-lg bg-background border border-input text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 min-w-0"
                 />
                 <button
                   type="submit"
@@ -95,7 +92,6 @@ export default function Footer() {
               </form>
             </div>
 
-            {/* Social Links */}
             <div className="flex items-center gap-3 mt-6">
               {[
                 { icon: Twitter, href: "#", label: "Twitter" },
@@ -108,7 +104,7 @@ export default function Footer() {
                   key={label}
                   href={href}
                   aria-label={label}
-                  className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors duration-200"
+                  className="w-9 h-9 rounded-lg bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors duration-200"
                 >
                   <Icon className="w-4 h-4" />
                 </a>
@@ -116,16 +112,15 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Link Columns */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h4 className="text-sm font-semibold text-white mb-4">{category}</h4>
+              <h4 className="text-sm font-semibold text-foreground mb-4">{category}</h4>
               <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.href}>
                     <Link
                       to={link.href}
-                      className="text-sm text-gray-400 hover:text-white transition-colors duration-200"
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
                     >
                       {link.label}
                     </Link>
@@ -137,22 +132,21 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-white/10">
+      <div className="border-t border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted-foreground">
             © {currentYear} ForceFocus, Inc. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <Link to="/privacy" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
+            <Link to="/privacy" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
               Privacy
             </Link>
-            <Link to="/terms" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
+            <Link to="/terms" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
               Terms
             </Link>
             <div className="flex items-center gap-1.5">
               <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-              <span className="text-xs text-gray-500">All systems operational</span>
+              <span className="text-xs text-muted-foreground">All systems operational</span>
             </div>
           </div>
         </div>

@@ -108,6 +108,7 @@ export function saveMockUser(user: object) {
 
 export function clearMockUser() {
   localStorage.removeItem("ff_user");
+  localStorage.removeItem("ff_impersonated_user");
 }
 
 export function getTheme(): "light" | "dark" {
@@ -118,4 +119,22 @@ export function getTheme(): "light" | "dark" {
 
 export function saveTheme(theme: "light" | "dark") {
   localStorage.setItem("ff_theme", theme);
+}
+
+export function getStoredSettings<T>(key: string, fallback: T): T {
+  try {
+    const stored = localStorage.getItem(key);
+    if (!stored) return fallback;
+    return JSON.parse(stored) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+export function saveStoredSettings<T>(key: string, value: T) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+export function removeStoredSettings(key: string) {
+  localStorage.removeItem(key);
 }

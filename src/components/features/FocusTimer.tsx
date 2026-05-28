@@ -10,18 +10,66 @@ const SESSION_CONFIGS: Record<SessionType, { label: string; duration: number; co
   "long-break": { label: "Long Break", duration: 15 * 60, color: "from-teal-500 to-teal-700" },
 };
 
+const SETTINGS_KEY = () => {
+  try {
+    const storedUser = localStorage.getItem("ff_user");
+    if (!storedUser) return "ff_settings_guest";
+    const parsed = JSON.parse(storedUser) as { id?: string };
+    return `ff_settings_${parsed.id || "guest"}`;
+  } catch {
+    return "ff_settings_guest";
+  }
+};
+
+const readStoredSettings = () => {
+  try {
+    const stored = localStorage.getItem(SETTINGS_KEY());
+    if (!stored) return null;
+    return JSON.parse(stored) as {
+      focus?: {
+        pomodoroDuration?: string;
+        shortBreak?: string;
+        longBreak?: string;
+        sessionsBeforeLongBreak?: string;
+        autoStartBreaks?: boolean;
+        autoStartPomodoros?: boolean;
+        strictMode?: boolean;
+        allowEmergencyBypass?: boolean;
+      };
+      notifications?: {
+        soundAlerts?: boolean;
+      };
+    };
+  } catch {
+    return null;
+  }
+};
+
 interface FocusTimerProps {
   onSessionComplete?: (type: SessionType, duration: number) => void;
 }
 
 export default function FocusTimer({ onSessionComplete }: FocusTimerProps) {
   const [sessionType, setSessionType] = useState<SessionType>("focus");
-  const [timeLeft, setTimeLeft] = useState(SESSION_CONFIGS.focus.duration);
+  const storedSettings = readStoredSettings();
+  const focusDuration = Number(storedSettings?.focus?.pomodoroDuration || 25) * 60;
+  const shortBreakDuration = Number(storedSettings?.focus?.shortBreak || 5) * 60;
+  const longBreakDuration = Number(storedSettings?.focus?.longBreak || 15) * 60;
+  const sessionsBeforeLongBreak = Number(storedSettings?.focus?.sessionsBeforeLongBreak || 4);
+  const [timeLeft, setTimeLeft] = useState(focusDuration);
   const [isRunning, setIsRunning] = useState(false);
   const [sessionsCompleted, setSessionsCompleted] = useState(0);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(!(storedSettings?.notifications?.soundAlerts ?? true));
 
-  const config = SESSION_CONFIGS[sessionType];
+  const config = {
+    ...SESSION_CONFIGS[sessionType],
+    duration:
+      sessionType === "focus"
+        ? focusDuration
+        : sessionType === "short-break"
+          ? shortBreakDuration
+          : longBreakDuration,
+  };
   const totalDuration = config.duration;
   const progress = ((totalDuration - timeLeft) / totalDuration) * 100;
   const circumference = 2 * Math.PI * 90;
@@ -29,20 +77,20 @@ export default function FocusTimer({ onSessionComplete }: FocusTimerProps) {
 
   const resetTimer = useCallback(() => {
     setIsRunning(false);
-    setTimeLeft(SESSION_CONFIGS[sessionType].duration);
-  }, [sessionType]);
+    setTimeLeft(sessionType === "focus" ? focusDuration : sessionType === "short-break" ? shortBreakDuration : longBreakDuration);
+  }, [sessionType, focusDuration, shortBreakDuration, longBreakDuration]);
 
   const handleSessionTypeChange = (type: SessionType) => {
     setSessionType(type);
     setIsRunning(false);
-    setTimeLeft(SESSION_CONFIGS[type].duration);
+    setTimeLeft(type === "focus" ? focusDuration : type === "short-break" ? shortBreakDuration : longBreakDuration);
   };
 
   const handleSkip = () => {
     if (sessionType === "focus") {
       const nextSessions = sessionsCompleted + 1;
       setSessionsCompleted(nextSessions);
-      handleSessionTypeChange(nextSessions % 4 === 0 ? "long-break" : "short-break");
+      handleSessionTypeChange(nextSessions % sessionsBeforeLongBreak === 0 ? "long-break" : "short-break");
     } else {
       handleSessionTypeChange("focus");
     }
@@ -70,8 +118,14 @@ export default function FocusTimer({ onSessionComplete }: FocusTimerProps) {
   }, [isRunning, sessionType, config.duration, onSessionComplete]);
 
   useEffect(() => {
-    setTimeLeft(SESSION_CONFIGS[sessionType].duration);
-  }, [sessionType]);
+    setTimeLeft(
+      sessionType === "focus"
+        ? focusDuration
+        : sessionType === "short-break"
+          ? shortBreakDuration
+          : longBreakDuration
+    );
+  }, [sessionType, focusDuration, shortBreakDuration, longBreakDuration]);
 
   return (
     <div className="bg-card border border-border rounded-2xl p-6">

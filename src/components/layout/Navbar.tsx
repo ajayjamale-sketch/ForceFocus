@@ -12,23 +12,28 @@ import {
   Settings,
   LogOut,
   LayoutDashboard,
+  ChevronRight,
 } from "lucide-react";
 
 import { useTheme } from "@/hooks/useTheme";
 import { useAuth } from "@/hooks/useAuth";
 import { cn, getInitials } from "@/lib/utils";
 import { NAV_ITEMS } from "@/lib/constants";
+import { toast } from "sonner";
+import NotificationPane from "./NotificationPane";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   const { theme, toggleTheme } = useTheme();
   const { user, isAuthenticated, logout } = useAuth();
 
   const location = useLocation();
   const navigate = useNavigate();
+  const isHomeHero = location.pathname === "/" && !isScrolled;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,6 +50,7 @@ export default function Navbar() {
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setIsUserMenuOpen(false);
+    setIsNotificationsOpen(false);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -68,6 +74,16 @@ export default function Navbar() {
     navigate("/login");
   };
 
+  const handleNotificationsClick = () => {
+    if (!isAuthenticated) {
+      toast.info("Sign in to view your notifications.");
+      navigate("/login");
+      return;
+    }
+
+    setIsNotificationsOpen((open) => !open);
+  };
+
   return (
     <nav
       className={cn(
@@ -85,7 +101,12 @@ export default function Navbar() {
               <Zap className="w-5 h-5 text-white" />
             </div>
 
-            <span className="font-display font-bold text-2xl text-foreground">
+            <span
+              className={cn(
+                "font-display font-bold text-2xl",
+                isHomeHero ? "text-foreground" : "text-foreground"
+              )}
+            >
               Force<span className="text-blue-600">Focus</span>
             </span>
           </Link>
@@ -96,12 +117,11 @@ export default function Navbar() {
               <Link
                 key={item.href}
                 to={item.href}
-                className={cn(
-                  "nav-link px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200",
-                  location.pathname === item.href &&
-                    "nav-link-active bg-primary/10"
-                )}
-              >
+                  className={cn(
+                    "nav-link px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200",
+                    location.pathname === item.href && "nav-link-active bg-primary/10"
+                  )}
+                >
                 {item.label}
               </Link>
             ))}
@@ -110,23 +130,31 @@ export default function Navbar() {
           {/* Right Section */}
           <div className="flex items-center gap-3">
             {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="btn-ghost w-12 h-12 flex items-center justify-center rounded-2xl hover:scale-105 transition-all duration-200"
-              aria-label="Toggle Theme"
-            >
+              <button
+                onClick={toggleTheme}
+                className={cn(
+                  "btn-ghost w-12 h-12 flex items-center justify-center rounded-2xl hover:scale-105 transition-all duration-200",
+                  isHomeHero && "hover:bg-muted"
+                )}
+                aria-label="Toggle Theme"
+              >
               {theme === "dark" ? (
-                <Sun className="w-7 h-7" />
+                <Sun className="w-6 h-6" />
               ) : (
-                <Moon className="w-7 h-7" />
+                <Moon className="w-6 h-6" />
               )}
             </button>
 
             {isAuthenticated ? (
               <>
                 {/* Notifications */}
-                <button className="btn-ghost w-12 h-12 flex items-center justify-center rounded-2xl relative hover:scale-105 transition-all duration-200">
-                  <Bell className="w-7 h-7" />
+                <button
+                  onClick={handleNotificationsClick}
+                  className="btn-ghost w-12 h-12 flex items-center justify-center rounded-2xl relative hover:scale-105 transition-all duration-200"
+                  aria-label="Notifications"
+                  title="Notifications"
+                >
+                  <Bell className="w-6 h-6" />
 
                   <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-blue-500 rounded-full animate-pulse" />
                 </button>
@@ -206,15 +234,15 @@ export default function Navbar() {
                             label: "Dashboard",
                             href: "/dashboard",
                           },
-                          {
-                            icon: User,
-                            label: "Profile",
-                            href: "/profile",
-                          },
-                          {
-                            icon: Settings,
-                            label: "Settings",
-                            href: "/settings",
+                        {
+                          icon: User,
+                          label: "View Profile",
+                          href: "/profile",
+                        },
+                        {
+                          icon: Settings,
+                          label: "Settings",
+                          href: "/settings",
                           },
                         ].map(({ icon: Icon, label, href }) => (
                           <Link
@@ -245,7 +273,10 @@ export default function Navbar() {
               <div className="hidden md:flex items-center gap-3">
                 <Link
                   to="/login"
-                  className="btn-ghost px-5 py-2.5 rounded-xl text-sm font-medium"
+                  className={cn(
+                    "btn-ghost px-5 py-2.5 rounded-xl text-sm font-medium",
+                    isHomeHero && "hover:bg-muted"
+                  )}
                 >
                   Log In
                 </Link>
@@ -260,13 +291,16 @@ export default function Navbar() {
             )}
 
             {/* Mobile Menu Toggle */}
-            <button
-              onClick={() =>
-                setIsMobileMenuOpen(!isMobileMenuOpen)
-              }
-              className="md:hidden btn-ghost w-12 h-12 flex items-center justify-center rounded-2xl"
-              aria-label="Toggle Mobile Menu"
-            >
+              <button
+                onClick={() =>
+                  setIsMobileMenuOpen(!isMobileMenuOpen)
+                }
+                className={cn(
+                  "md:hidden btn-ghost w-12 h-12 flex items-center justify-center rounded-2xl",
+                  isHomeHero && "hover:bg-muted"
+                )}
+                aria-label="Toggle Mobile Menu"
+              >
               {isMobileMenuOpen ? (
                 <X className="w-6 h-6" />
               ) : (
@@ -309,7 +343,7 @@ export default function Navbar() {
                   to="/profile"
                   className="block px-4 py-3 rounded-2xl text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted"
                 >
-                  Profile
+                  View Profile
                 </Link>
 
                 <button
@@ -339,6 +373,11 @@ export default function Navbar() {
           </div>
         </div>
       )}
+
+      <NotificationPane
+        open={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
+      />
     </nav>
   );
 }

@@ -18,29 +18,102 @@ import {
   User,
   LogOut,
   Flame,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import { cn, getInitials } from "@/lib/utils";
 import Navbar from "./Navbar";
+import NotificationPane from "./NotificationPane";
 
-const sidebarItems = [
-  { section: "PRODUCTIVITY", items: [
-    { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
-    { icon: Timer, label: "Focus", href: "/dashboard/focus" },
-    { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
-    { icon: Target, label: "Goals", href: "/dashboard/goals" },
-  ]},
-  { section: "TRACKING", items: [
-    { icon: Repeat, label: "Habits", href: "/dashboard/habits" },
-    { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
-    { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
-  ]},
-  { section: "COLLABORATION", items: [
-    { icon: Users, label: "Team", href: "/dashboard/team" },
-    { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
-  ]},
-];
+const sidebarItemsByRole = {
+  individual: [
+    { section: "PRODUCTIVITY", items: [
+      { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
+      { icon: Timer, label: "Focus", href: "/dashboard/focus" },
+      { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
+      { icon: Target, label: "Goals", href: "/dashboard/goals" },
+    ]},
+    { section: "TRACKING", items: [
+      { icon: Repeat, label: "Habits", href: "/dashboard/habits" },
+      { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
+      { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
+    ]},
+    { section: "MOTIVATION", items: [
+      { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
+    ]},
+  ],
+  student: [
+    { section: "STUDY FLOW", items: [
+      { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
+      { icon: Timer, label: "Focus", href: "/dashboard/focus" },
+      { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
+      { icon: Target, label: "Study Goals", href: "/dashboard/goals" },
+    ]},
+    { section: "TRACKING", items: [
+      { icon: Repeat, label: "Habits", href: "/dashboard/habits" },
+      { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
+      { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
+    ]},
+    { section: "MOTIVATION", items: [
+      { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
+    ]},
+  ],
+  team_member: [
+    { section: "WORKSPACE", items: [
+      { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
+      { icon: Timer, label: "Focus", href: "/dashboard/focus" },
+      { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
+      { icon: Users, label: "Team Space", href: "/dashboard/team" },
+    ]},
+    { section: "TRACKING", items: [
+      { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
+      { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
+      { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
+    ]},
+  ],
+  team_manager: [
+    { section: "LEADERSHIP", items: [
+      { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
+      { icon: Timer, label: "Focus", href: "/dashboard/focus" },
+      { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
+      { icon: Target, label: "Goals", href: "/dashboard/goals" },
+      { icon: Users, label: "Team Space", href: "/dashboard/team" },
+    ]},
+    { section: "TRACKING", items: [
+      { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
+      { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
+      { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
+    ]},
+  ],
+  hr_admin: [
+    { section: "ORGANIZATION", items: [
+      { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
+      { icon: Users, label: "Team Space", href: "/dashboard/team" },
+      { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
+      { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
+    ]},
+    { section: "OPERATIONS", items: [
+      { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
+      { icon: Target, label: "Goals", href: "/dashboard/goals" },
+      { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
+    ]},
+  ],
+  platform_admin: [
+    { section: "PLATFORM", items: [
+      { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
+      { icon: Users, label: "Team Space", href: "/dashboard/team" },
+      { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
+      { icon: Heart, label: "Wellness", href: "/dashboard/wellness" },
+    ]},
+    { section: "ADMIN", items: [
+      { icon: CheckSquare, label: "Tasks", href: "/dashboard/tasks" },
+      { icon: Target, label: "Goals", href: "/dashboard/goals" },
+      { icon: Trophy, label: "Achievements", href: "/dashboard/achievements" },
+    ]},
+  ],
+};
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -49,10 +122,12 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
+  const sidebarItems = sidebarItemsByRole[user?.role ?? "individual"];
 
   const handleLogout = () => {
     logout();
@@ -273,17 +348,37 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
             <div className="flex items-center gap-2">
               <Link
+                to="/profile"
+                className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors duration-200"
+              >
+                <User className="w-4 h-4" />
+                View Profile
+              </Link>
+              <Link
                 to="/dashboard/focus"
                 className="hidden sm:flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition-colors duration-200"
               >
                 <Timer className="w-4 h-4" />
                 Start Focus
               </Link>
-              <button className="btn-ghost w-10 h-10 flex items-center justify-center rounded-xl relative">
-                <Bell className="w-6 h-6" />
+              <button
+                onClick={toggleTheme}
+                className="btn-ghost w-11 h-11 flex items-center justify-center rounded-xl"
+                aria-label="Toggle theme"
+                title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
+              <button
+                onClick={() => setIsNotificationsOpen((open) => !open)}
+                className="btn-ghost w-11 h-11 flex items-center justify-center rounded-xl relative"
+                aria-label="Notifications"
+                title="Notifications"
+              >
+                <Bell className="w-5 h-5" />
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-blue-500 rounded-full" />
               </button>
-              <Link to="/profile">
+              <Link to="/profile" aria-label="View profile">
                 {user?.avatar ? (
                   <img
                     src={user.avatar}
@@ -305,6 +400,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           {children}
         </main>
       </div>
+
+      <NotificationPane
+        open={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
+      />
     </div>
   );
 }

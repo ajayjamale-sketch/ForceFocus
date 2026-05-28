@@ -7,7 +7,7 @@ import { TeamMembers } from "@/components/team/TeamMembers";
 import { TeamInviteModal } from "@/components/team/TeamInviteModal";
 import { RoleGuard } from "@/components/RoleGuard";
 import { Team, TeamMember } from "@/types";
-import { ArrowLeft, Loader2, Users, Briefcase, Activity, UserPlus, Settings } from "lucide-react";
+import { ArrowLeft, Loader2, Users, Briefcase, Activity, UserPlus, Settings, X } from "lucide-react";
 
 export default function TeamDetail() {
   const { teamId } = useParams<{ teamId: string }>();
@@ -17,11 +17,16 @@ export default function TeamDetail() {
   const [team, setTeam] = useState<Team | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [teamName, setTeamName] = useState("");
+  const [teamDescription, setTeamDescription] = useState("");
 
   useEffect(() => {
     if (teamId) {
       teamService.fetchTeamDetails(teamId).then((data) => {
         setTeam(data);
+        setTeamName(data?.name ?? "");
+        setTeamDescription(data?.description ?? "");
         setIsLoading(false);
       });
     }
@@ -71,10 +76,29 @@ export default function TeamDetail() {
 
   const handleInvite = async (email: string, role: TeamMember["role"]) => {
     if (teamId) {
-      await teamService.inviteMember(teamId, email, role);
-      // Mocking the addition of a member
-      const newMember: TeamMember = { userId: email.split("@")[0], role, joinedAt: new Date().toISOString() };
-      setTeam({ ...team, members: [...team.members, newMember] });
+      const success = await teamService.inviteMember(teamId, email, role);
+      if (success) {
+        const userId = email.split("@")[0].trim().toLowerCase();
+        const existing = team.members.find((member) => member.userId === userId);
+        const nextMembers = existing
+          ? team.members.map((member) => member.userId === userId ? { ...member, role } : member)
+          : [...team.members, { userId, role, joinedAt: new Date().toISOString() }];
+        setTeam({ ...team, members: nextMembers });
+      }
+    }
+  };
+
+  const handleSaveTeam = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!teamId || !team) return;
+    const updated = await teamService.updateTeam(teamId, {
+      name: teamName.trim(),
+      description: teamDescription.trim(),
+    });
+    if (updated) {
+      setTeam(updated);
+      toast.success("Team updated");
+      setIsEditModalOpen(false);
     }
   };
 
@@ -113,7 +137,12 @@ export default function TeamDetail() {
                   <UserPlus className="w-4 h-4" />
                   Invite Member
                 </button>
-                <button className="p-2 bg-card border border-border hover:bg-muted text-muted-foreground rounded-xl transition-colors">
+                <button
+                  onClick={() => setIsEditModalOpen(true)}
+                  className="p-2 bg-card border border-border hover:bg-muted text-muted-foreground rounded-xl transition-colors"
+                  aria-label="Edit team settings"
+                  title="Edit team settings"
+                >
                   <Settings className="w-5 h-5" />
                 </button>
               </div>
@@ -179,6 +208,65 @@ export default function TeamDetail() {
         onClose={() => setIsInviteModalOpen(false)}
         onInvite={handleInvite}
       />
+
+      {isEditModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-lg rounded-2xl border border-border bg-card shadow-2xl">
+            <div className="flex items-center justify-between border-b border-border px-6 py-4">
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">Team Settings</h2>
+                <p className="text-sm text-muted-foreground">Update the team name and description.</p>
+              </div>
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form onSubmit={handleSaveTeam} className="space-y-4 p-6">
+              <div className="space-y-2">
+                <label htmlFor="team-name" className="block text-sm font-medium text-foreground">
+                  Team Name
+                </label>
+                <input
+                  id="team-name"
+                  value={teamName}
+                  onChange={(e) => setTeamName(e.target.value)}
+                  className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-foreground outline-none transition-all focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="team-description" className="block text-sm font-medium text-foreground">
+                  Description
+                </label>
+                <textarea
+                  id="team-description"
+                  value={teamDescription}
+                  onChange={(e) => setTeamDescription(e.target.value)}
+                  rows={4}
+                  className="w-full resize-none rounded-xl border border-input bg-background px-4 py-2.5 text-foreground outline-none transition-all focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 }

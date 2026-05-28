@@ -177,27 +177,27 @@ export default function Documentation() {
       <Navbar />
 
       {/* Hero */}
-      <section className="bg-[#0A0F1E] pt-32 pb-20 relative overflow-hidden">
-        <div className="absolute top-1/3 left-1/4 w-80 h-80 bg-blue-600/15 rounded-full blur-3xl" />
+      <section className="relative pt-32 pb-20 overflow-hidden bg-gradient-to-br from-blue-50 via-background to-emerald-50 dark:bg-[#0A0F1E]">
+        <div className="absolute top-1/3 left-1/4 w-80 h-80 bg-blue-500/10 dark:bg-blue-600/15 rounded-full blur-3xl" />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-gray-300 text-sm font-medium mb-8">
+          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 border border-blue-200 text-blue-700 dark:bg-white/10 dark:border-white/20 dark:text-gray-300 text-sm font-medium mb-8">
             <BookOpen className="w-3.5 h-3.5 text-blue-400" />
             Documentation
           </span>
-          <h1 className="font-display text-5xl font-bold text-white mb-4">
+          <h1 className="font-display text-5xl font-bold text-foreground dark:text-white mb-4">
             Everything you need to get started
           </h1>
-          <p className="text-gray-400 text-lg mb-8">
+          <p className="text-muted-foreground dark:text-gray-400 text-lg mb-8">
             Guides, API references, tutorials, and best practices for ForceFocus.
           </p>
           <div className="relative max-w-md mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground dark:text-gray-400" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search documentation..."
-              className="w-full pl-11 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              className="w-full pl-11 pr-4 py-3 bg-white/80 dark:bg-white/10 border border-border dark:border-white/20 rounded-xl text-foreground dark:text-white placeholder:text-muted-foreground dark:placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
             />
           </div>
         </div>

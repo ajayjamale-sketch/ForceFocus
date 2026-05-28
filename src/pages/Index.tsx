@@ -24,8 +24,8 @@ import {
   Lightbulb,
   Leaf,
 } from "lucide-react";
-import { useTheme } from "@/hooks/useTheme";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import {
   TESTIMONIALS,
   PRICING_PLANS,
@@ -126,24 +126,29 @@ const ICON_MAP: Record<string, React.ElementType> = {
 
 export default function Index() {
   const [pricingBilling, setPricingBilling] = useState<"monthly" | "yearly">("monthly");
-  const { theme } = useTheme();
+
+  const handleWatchDemo = () => {
+    toast.info("Demo mode is opening. Try the dashboard preview below to explore the product flow.");
+    const target = document.getElementById("dashboard-preview");
+    target?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       {/* ==================== HERO SECTION ==================== */}
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-[#0A0F1E]">
+      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-blue-50 via-background to-emerald-50 dark:bg-none dark:bg-[#0A0F1E]">
         {/* Background Effects */}
         <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-900/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 dark:bg-blue-600/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-emerald-500/10 dark:bg-emerald-500/15 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-200/20 dark:bg-blue-900/10 rounded-full blur-3xl" />
           {/* Grid pattern */}
           <div
-            className="absolute inset-0 opacity-[0.04]"
+            className="absolute inset-0 opacity-[0.08] dark:opacity-[0.04]"
             style={{
               backgroundImage:
-                "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
+                "linear-gradient(rgba(37,99,235,0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,0.16) 1px, transparent 1px)",
               backgroundSize: "60px 60px",
             }}
           />
@@ -154,13 +159,13 @@ export default function Index() {
             {/* Left: Copy */}
             <div className="animate-fade-in">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-sm font-medium mb-8">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 border border-blue-200 text-blue-700 dark:bg-blue-500/10 dark:border-blue-500/30 dark:text-blue-400 text-sm font-medium mb-8">
                 <Sparkles className="w-3.5 h-3.5" />
                 AI-Powered Productivity Platform
                 <ArrowRight className="w-3.5 h-3.5" />
               </div>
 
-              <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-[1.05] mb-6">
+              <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground dark:text-white leading-[1.05] mb-6">
                 Master Your{" "}
                 <span className="bg-gradient-to-r from-blue-400 via-blue-300 to-emerald-400 bg-clip-text text-transparent">
                   Focus.
@@ -172,7 +177,7 @@ export default function Index() {
                 </span>
               </h1>
 
-              <p className="text-lg text-gray-400 leading-relaxed mb-8 max-w-xl">
+              <p className="text-lg text-muted-foreground dark:text-gray-400 leading-relaxed mb-8 max-w-xl">
                 ForceFocus combines AI-powered focus sessions, habit tracking,
                 distraction blocking, and behavioral analytics to help you reach
                 peak performance — every single day.
@@ -186,7 +191,11 @@ export default function Index() {
                   Start for Free
                   <ArrowRight className="w-4 h-4" />
                 </Link>
-                <button className="inline-flex items-center gap-2 px-6 py-3.5 border border-white/20 text-white font-medium rounded-xl hover:bg-white/10 transition-all duration-200 text-base">
+                <button
+                  onClick={handleWatchDemo}
+                  className="inline-flex items-center gap-2 px-6 py-3.5 border border-border text-foreground dark:border-white/20 dark:text-white font-medium rounded-xl hover:bg-muted dark:hover:bg-white/10 transition-all duration-200 text-base"
+                  type="button"
+                >
                   <Play className="w-4 h-4 text-blue-400" />
                   Watch Demo
                 </button>
@@ -205,7 +214,7 @@ export default function Index() {
                       key={i}
                       src={src}
                       alt=""
-                      className="w-8 h-8 rounded-full border-2 border-[#0A0F1E] object-cover"
+                      className="w-8 h-8 rounded-full border-2 border-background dark:border-[#0A0F1E] object-cover"
                     />
                   ))}
                 </div>
@@ -216,10 +225,10 @@ export default function Index() {
                     ))}
                     <span className="text-yellow-400 text-sm font-semibold ml-1">4.9</span>
                   </div>
-                  <p className="text-gray-400 text-xs">Loved by 2.4M+ professionals</p>
+                  <p className="text-muted-foreground dark:text-gray-400 text-xs">Loved by 2.4M+ professionals</p>
                 </div>
 
-                <div className="flex items-center gap-1.5 text-gray-400 text-sm">
+                <div className="flex items-center gap-1.5 text-muted-foreground dark:text-gray-400 text-sm">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                   No credit card required
                 </div>
@@ -228,13 +237,13 @@ export default function Index() {
 
             {/* Right: Hero Visual */}
             <div className="relative animate-fade-in" style={{ animationDelay: "0.2s" }}>
-              <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+              <div className="relative rounded-2xl overflow-hidden border border-border dark:border-white/10 shadow-2xl">
                 <img
                   src={heroImage}
                   alt="ForceFocus Dashboard Preview"
                   className="w-full h-auto object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E]/50 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/20 dark:from-[#0A0F1E]/50 to-transparent" />
               </div>
 
               {/* Floating Cards */}
@@ -267,8 +276,8 @@ export default function Index() {
 
         {/* Scroll Indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
-          <span className="text-gray-500 text-xs">Scroll to explore</span>
-          <ChevronDown className="w-4 h-4 text-gray-500" />
+          <span className="text-muted-foreground dark:text-gray-500 text-xs">Scroll to explore</span>
+          <ChevronDown className="w-4 h-4 text-muted-foreground dark:text-gray-500" />
         </div>
       </section>
 
@@ -348,20 +357,20 @@ export default function Index() {
       </section>
 
       {/* ==================== PRODUCT WORKFLOW SECTION ==================== */}
-      <section className="py-24 bg-[#0A0F1E] overflow-hidden">
+      <section className="py-24 bg-muted/30 dark:bg-[#0A0F1E] overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-white/10 text-gray-300 border border-white/20 mb-4">
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-700 border border-blue-200 dark:bg-white/10 dark:text-gray-300 dark:border-white/20 mb-4">
               <BarChart3 className="w-3.5 h-3.5" />
               How It Works
             </span>
-            <h2 className="font-display text-4xl sm:text-5xl font-bold text-white mb-4">
+            <h2 className="font-display text-4xl sm:text-5xl font-bold text-foreground dark:text-white mb-4">
               Your daily{" "}
               <span className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
                 performance loop
               </span>
             </h2>
-            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground dark:text-gray-400 max-w-2xl mx-auto">
               A science-backed workflow that compounds over time. Four simple
               steps to sustainable peak performance.
             </p>
@@ -373,9 +382,9 @@ export default function Index() {
               return (
                 <div key={step.step} className="relative">
                   {i < WORKFLOW_STEPS.length - 1 && (
-                    <div className="hidden lg:block absolute top-10 left-[calc(100%+1rem)] w-8 h-0.5 bg-gradient-to-r from-white/20 to-transparent z-10" />
+                    <div className="hidden lg:block absolute top-10 left-[calc(100%+1rem)] w-8 h-0.5 bg-gradient-to-r from-border dark:from-white/20 to-transparent z-10" />
                   )}
-                  <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-blue-500/40 hover:bg-white/8 transition-all duration-300">
+                  <div className="bg-card border border-border rounded-2xl p-6 card-hover hover:border-blue-500/40 dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10 transition-all duration-300">
                     <div className="flex items-start gap-4 mb-4">
                       <div
                         className={cn(
@@ -385,14 +394,14 @@ export default function Index() {
                       >
                         <Icon className="w-5 h-5 text-white" />
                       </div>
-                      <span className="font-display text-4xl font-bold text-white/10">
+                      <span className="font-display text-4xl font-bold text-foreground/10 dark:text-white/10">
                         {step.step}
                       </span>
                     </div>
-                    <h3 className="text-base font-semibold text-white mb-2">
+                    <h3 className="text-base font-semibold text-foreground dark:text-white mb-2">
                       {step.title}
                     </h3>
-                    <p className="text-sm text-gray-400 leading-relaxed">
+                    <p className="text-sm text-muted-foreground dark:text-gray-400 leading-relaxed">
                       {step.description}
                     </p>
                   </div>
@@ -515,7 +524,7 @@ export default function Index() {
       </section>
 
       {/* ==================== DASHBOARD PREVIEW SECTION ==================== */}
-      <section className="py-24 bg-muted/30">
+      <section className="py-24 bg-muted/30" id="dashboard-preview">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
             <span className="section-badge mb-4">
@@ -812,19 +821,19 @@ export default function Index() {
       </section>
 
       {/* ==================== CTA BANNER SECTION ==================== */}
-      <section className="py-24 bg-gradient-to-br from-[#0F172A] via-[#1E3A5F] to-[#0F172A] relative overflow-hidden">
-        <div className="absolute inset-0">
+      <section className="py-24 bg-gradient-to-br from-blue-50 via-background to-emerald-50 dark:from-[#0F172A] dark:via-[#1E3A5F] dark:to-[#0F172A] relative overflow-hidden">
+        <div className="absolute inset-0 hidden dark:block">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl" />
           <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl" />
         </div>
 
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-gray-300 text-sm font-medium mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 border border-blue-200 text-blue-700 dark:bg-white/10 dark:border-white/20 dark:text-gray-300 text-sm font-medium mb-8">
             <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
             Join 2.4M+ high-performers
           </div>
 
-          <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+          <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground dark:text-white mb-6 leading-tight">
             Your most productive year
             <br />
             starts{" "}
@@ -833,7 +842,7 @@ export default function Index() {
             </span>
           </h2>
 
-          <p className="text-lg text-gray-400 mb-10 max-w-xl mx-auto leading-relaxed">
+          <p className="text-lg text-muted-foreground dark:text-gray-400 mb-10 max-w-xl mx-auto leading-relaxed">
             Stop losing hours to distraction. Start building the focus habits that
             compound into an extraordinary life. Your first month is completely free.
           </p>
@@ -848,13 +857,13 @@ export default function Index() {
             </Link>
             <Link
               to="/pricing"
-              className="inline-flex items-center gap-2 px-7 py-4 border border-white/20 text-white font-medium rounded-xl hover:bg-white/10 transition-all duration-200 text-base"
+              className="inline-flex items-center gap-2 px-7 py-4 border border-border text-foreground font-medium rounded-xl hover:bg-muted dark:border-white/20 dark:text-white dark:hover:bg-white/10 transition-all duration-200 text-base"
             >
               View Pricing
             </Link>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-6 mt-8 text-sm text-gray-500">
+          <div className="flex flex-wrap items-center justify-center gap-6 mt-8 text-sm text-muted-foreground dark:text-gray-500">
             {["Free 14-day trial", "No credit card required", "Cancel anytime", "SOC 2 Compliant"].map((item) => (
               <div key={item} className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />

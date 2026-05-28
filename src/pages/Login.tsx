@@ -1,10 +1,16 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Zap, ArrowRight, User, Users, GraduationCap, Settings, Briefcase } from "lucide-react";
+import { Eye, EyeOff, Zap, ArrowRight, Users, GraduationCap, Settings, Briefcase } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { DEMO_USERS } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+
+const getPostLoginRoute = (role: string) => {
+  if (role === "team_member" || role === "team_manager") return "/team";
+  if (role === "hr_admin" || role === "platform_admin") return "/admin/dashboard";
+  return "/dashboard";
+};
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -19,7 +25,7 @@ export default function Login() {
     {
       key: "professional" as const,
       label: "Individual Pro",
-      role: "Pro Plan",
+      role: "Individual",
       icon: Briefcase,
       color: "from-blue-500 to-blue-700",
       badge: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
@@ -29,7 +35,7 @@ export default function Login() {
     {
       key: "student" as const,
       label: "Student",
-      role: "Free Plan",
+      role: "Student",
       icon: GraduationCap,
       color: "from-emerald-500 to-emerald-700",
       badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
@@ -39,7 +45,7 @@ export default function Login() {
     {
       key: "manager" as const,
       label: "Team Manager",
-      role: "Team Plan",
+      role: "Team Manager",
       icon: Users,
       color: "from-purple-500 to-purple-700",
       badge: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
@@ -47,8 +53,28 @@ export default function Login() {
       user: DEMO_USERS.manager,
     },
     {
+      key: "teamMember" as const,
+      label: "Team Member",
+      role: "Collaborator",
+      icon: Users,
+      color: "from-cyan-500 to-cyan-700",
+      badge: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400",
+      border: "hover:border-cyan-400",
+      user: DEMO_USERS.teamMember,
+    },
+    {
+      key: "hrAdmin" as const,
+      label: "HR Admin",
+      role: "Org Admin",
+      icon: Settings,
+      color: "from-slate-600 to-slate-800",
+      badge: "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-300",
+      border: "hover:border-slate-400",
+      user: DEMO_USERS.hrAdmin,
+    },
+    {
       key: "admin" as const,
-      label: "Admin",
+      label: "Platform Admin",
       role: "Platform Admin",
       icon: Settings,
       color: "from-orange-500 to-orange-700",
@@ -61,9 +87,9 @@ export default function Login() {
   const handleDemoLogin = async (key: keyof typeof DEMO_USERS) => {
     setDemoLoading(key);
     await loginAsDemo(key);
-    const acc = DEMO_ACCOUNTS.find(a => a.key === key)!;
+    const acc = DEMO_ACCOUNTS.find((a) => a.key === key)!;
     toast.success(`Logged in as ${acc.user.name} (${acc.label})`);
-    navigate("/dashboard");
+    navigate(getPostLoginRoute(acc.user.role));
     setDemoLoading(null);
   };
 
@@ -81,7 +107,7 @@ export default function Login() {
     try {
       await login(email, password);
       toast.success("Welcome back! 🎯");
-      navigate("/dashboard");
+      navigate(getPostLoginRoute("individual"));
     } catch {
       toast.error("Login failed. Please try again.");
     }
@@ -91,15 +117,13 @@ export default function Login() {
     toast.info("Connecting to Google...");
     await loginAsDemo("professional");
     toast.success("Signed in with Google!");
-    navigate("/dashboard");
+    navigate(getPostLoginRoute("individual"));
   };
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Left: Form */}
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          {/* Logo */}
           <Link to="/" className="inline-flex items-center gap-2 mb-8">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center">
               <Zap className="w-4 h-4 text-white" />
@@ -116,11 +140,10 @@ export default function Login() {
             Sign in to continue your productivity journey.
           </p>
 
-          {/* Demo Quick Access */}
           <div className="mb-6 p-4 rounded-2xl border border-dashed border-blue-300 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/20">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-              <p className="text-xs font-semibold text-foreground/70 uppercase tracking-wider">Demo — Skip Login</p>
+              <p className="text-xs font-semibold text-foreground/70 uppercase tracking-wider">Demo - Skip Login</p>
             </div>
             <div className="grid grid-cols-2 gap-2">
               {DEMO_ACCOUNTS.map(({ key, label, role, icon: Icon, color, badge, border, user: demoUser }) => (
@@ -153,11 +176,10 @@ export default function Login() {
               ))}
             </div>
             <p className="text-[10px] text-muted-foreground mt-2.5 text-center">
-              Explore the app instantly — no credentials needed
+              Explore the app instantly - no credentials needed
             </p>
           </div>
 
-          {/* Google Login */}
           <button
             onClick={handleGoogleLogin}
             className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-border rounded-xl text-foreground font-medium hover:bg-muted transition-all duration-200 mb-4"
@@ -192,25 +214,15 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className={cn(
-                  "input-field",
-                  errors.email && "border-red-500 focus:ring-red-500/50"
-                )}
+                className={cn("input-field", errors.email && "border-red-500 focus:ring-red-500/50")}
               />
-              {errors.email && (
-                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
-              )}
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-sm font-medium text-foreground">
-                  Password
-                </label>
-                <Link
-                  to="/forgot-password"
-                  className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400"
-                >
+                <label className="text-sm font-medium text-foreground">Password</label>
+                <Link to="/forgot-password" className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400">
                   Forgot password?
                 </Link>
               </div>
@@ -220,10 +232,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className={cn(
-                    "input-field pr-12",
-                    errors.password && "border-red-500 focus:ring-red-500/50"
-                  )}
+                  className={cn("input-field pr-12", errors.password && "border-red-500 focus:ring-red-500/50")}
                 />
                 <button
                   type="button"
@@ -233,9 +242,7 @@ export default function Login() {
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              {errors.password && (
-                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
-              )}
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
             </div>
 
             <button
@@ -259,17 +266,13 @@ export default function Login() {
 
           <p className="text-center text-sm text-muted-foreground mt-6">
             Don't have an account?{" "}
-            <Link
-              to="/register"
-              className="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium"
-            >
+            <Link to="/register" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium">
               Start free
             </Link>
           </p>
         </div>
       </div>
 
-      {/* Right: Visual */}
       <div className="hidden lg:flex flex-1 bg-gradient-to-br from-[#0F172A] via-[#1E3A5F] to-[#0F172A] items-center justify-center p-12 relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl" />
