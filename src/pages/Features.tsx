@@ -7,6 +7,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { FEATURES_LIST } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 const ICON_MAP: Record<string, React.ElementType> = {
   Timer, Target, Brain, Shield, TrendingUp, Users, Repeat, Heart, Zap,
@@ -113,6 +114,7 @@ const integrations = [
 ];
 
 export default function Features() {
+  const { isAuthenticated } = useAuth();
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -138,7 +140,7 @@ export default function Features() {
             Nine powerful modules engineered to eliminate distraction, build habits, and maximize your output — all in one cohesive platform.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/register" className="btn-primary inline-flex items-center gap-2">
+            <Link to={isAuthenticated ? "/dashboard" : "/register"} className="btn-primary inline-flex items-center gap-2">
               Start Free Trial <ArrowRight className="w-4 h-4" />
             </Link>
             <button className="px-6 py-3 border border-primary text-primary rounded-xl hover:bg-primary/10 transition-colors font-medium inline-flex items-center gap-2">
@@ -241,7 +243,7 @@ export default function Features() {
           <p className="text-blue-100 mb-8 text-lg">
             Start your 14-day free trial. No credit card needed.
           </p>
-          <Link to="/register" className="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-colors shadow-lg">
+          <Link to={isAuthenticated ? "/dashboard" : "/register"} className="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-colors shadow-lg">
             Get Started Free <ArrowRight className="w-5 h-5" />
           </Link>
         </div>

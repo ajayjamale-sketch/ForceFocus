@@ -13,6 +13,7 @@ import Features from "@/pages/Features";
 import Pricing from "@/pages/Pricing";
 import Contact from "@/pages/Contact";
 import Blog from "@/pages/Blog";
+import BlogDetail from "@/pages/BlogDetail";
 import FAQ from "@/pages/FAQ";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import TermsAndConditions from "@/pages/TermsAndConditions";
@@ -41,6 +42,7 @@ import TeamCreate from "@/pages/team/TeamCreate";
 import TeamDetail from "@/pages/team/TeamDetail";
 import TeamPage from "@/pages/TeamPage";
 import AdminLayout from "@/components/layout/AdminLayout";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import UserList from "@/pages/admin/users/UserList";
 import UserEdit from "@/pages/admin/users/UserEdit";
 import AdminRoles from "@/pages/admin/AdminRoles";
@@ -83,7 +85,7 @@ export default function App() {
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:slug" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogDetail />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsAndConditions />} />
@@ -123,8 +125,8 @@ export default function App() {
           <Route path="/admin/settings" element={<RequireRole allowedRoles={['hr_admin','platform_admin']}><AdminLayout><AdminSettings /></AdminLayout></RequireRole>} />
 
           {/* Account pages */}
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/profile" element={<DashboardLayout><Profile /></DashboardLayout>} />
+          <Route path="/settings" element={<DashboardLayout><Settings /></DashboardLayout>} />
 
           {/* 404 */}
           <Route path="*" element={<NotFound />} />

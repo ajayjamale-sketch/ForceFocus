@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import { toast } from "sonner";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+
+
 import {
   Bell, Shield, Palette, Timer, Globe, CreditCard,
   ChevronRight, Sun, Moon, Save, Trash2, Download, Lock,
@@ -211,7 +211,7 @@ export default function Settings() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
+
       <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-24 pb-16">
         <div className="mb-8">
           <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
@@ -613,7 +613,7 @@ export default function Settings() {
           </div>
         </div>
       </div>
-      <Footer />
+
     </div>
   );
 }

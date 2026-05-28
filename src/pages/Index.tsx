@@ -35,6 +35,7 @@ import {
   WORKFLOW_STEPS,
 } from "@/lib/constants";
 import heroImage from "@/assets/hero-dashboard.jpg";
+import { useAuth } from "@/hooks/useAuth";
 
 // Animated counter
 function AnimatedCounter({
@@ -126,6 +127,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
 
 export default function Index() {
   const [pricingBilling, setPricingBilling] = useState<"monthly" | "yearly">("monthly");
+  const { isAuthenticated } = useAuth();
 
   const handleWatchDemo = () => {
     toast.info("Demo mode is opening. Try the dashboard preview below to explore the product flow.");
@@ -185,7 +187,7 @@ export default function Index() {
 
               <div className="flex flex-wrap items-center gap-4 mb-10">
                 <Link
-                  to="/register"
+                  to={isAuthenticated ? "/dashboard" : "/register"}
                   className="inline-flex items-center gap-2 px-7 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-blue-glow hover:-translate-y-0.5 text-base"
                 >
                   Start for Free
@@ -412,7 +414,7 @@ export default function Index() {
 
           <div className="text-center mt-12">
             <Link
-              to="/register"
+              to={isAuthenticated ? "/dashboard" : "/register"}
               className="inline-flex items-center gap-2 px-7 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-blue-glow"
             >
               Start Your First Focus Session
@@ -758,7 +760,7 @@ export default function Index() {
                 </ul>
 
                 <Link
-                  to="/register"
+                  to={isAuthenticated ? "/dashboard" : "/register"}
                   className={cn(
                     "w-full text-center py-3 rounded-xl font-semibold text-sm transition-all duration-200",
                     plan.popular
@@ -849,7 +851,7 @@ export default function Index() {
 
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
-              to="/register"
+              to={isAuthenticated ? "/dashboard" : "/register"}
               className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-blue-glow text-base hover:-translate-y-0.5"
             >
               Start Free — No Card Needed

@@ -14,8 +14,8 @@ import {
   Trophy,
   Timer,
 } from "lucide-react";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+
+
 import { getInitials } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
@@ -67,7 +67,7 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-24 pb-16">
         {/* Header */}
         <div className="mb-8">
@@ -257,7 +257,7 @@ export default function Profile() {
           </div>
         </div>
       </div>
-      <Footer />
+
     </div>
   );
 }

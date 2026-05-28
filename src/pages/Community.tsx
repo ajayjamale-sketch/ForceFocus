@@ -1,30 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Users, MessageCircle, Trophy, Globe, Zap, ArrowRight, Star,
-  Hash, TrendingUp, Heart, Share2, Bookmark, ThumbsUp, ExternalLink
+  Hash, TrendingUp, Heart, Share2, Bookmark, ThumbsUp, ExternalLink,
+  Plus, X, Send
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
-const stats = [
-  { value: "2.4M+", label: "Community Members" },
-  { value: "80+", label: "Countries" },
-  { value: "12K+", label: "Forum Posts/Month" },
-  { value: "98%", label: "Questions Answered" },
-];
+// Types
+interface ForumPost {
+  id: string;
+  title: string;
+  author: string;
+  avatar: string;
+  category: string;
+  replies: number;
+  likes: number;
+  time: string;
+  pinned: boolean;
+  timestamp: number; // for sorting
+}
 
-const channels = [
-  { icon: Hash, name: "#general", desc: "General productivity chat, introductions, and announcements", members: "18,400", color: "text-blue-500" },
-  { icon: Hash, name: "#deep-work-tips", desc: "Share your best strategies for distraction-free focus", members: "12,200", color: "text-emerald-500" },
-  { icon: Hash, name: "#habit-accountability", desc: "Daily check-ins and habit streak celebrations", members: "9,800", color: "text-pink-500" },
-  { icon: Hash, name: "#ai-productivity", desc: "Discuss AI tools, automation, and smart workflows", members: "8,100", color: "text-purple-500" },
-  { icon: Hash, name: "#team-productivity", desc: "For managers and team leads optimizing group performance", members: "5,400", color: "text-cyan-500" },
-  { icon: Hash, name: "#student-focus", desc: "Study strategies, exam prep, and academic deep work", members: "14,300", color: "text-orange-500" },
-];
-
-const forumPosts = [
+// Extended posts data (original + more for pagination)
+const basePosts: ForumPost[] = [
   {
     id: "1",
     title: "How I went from 2 hours to 6 hours of deep work per day in 30 days",
@@ -35,6 +36,7 @@ const forumPosts = [
     likes: 847,
     time: "2 hours ago",
     pinned: true,
+    timestamp: Date.now() - 2 * 3600000,
   },
   {
     id: "2",
@@ -46,6 +48,7 @@ const forumPosts = [
     likes: 421,
     time: "5 hours ago",
     pinned: false,
+    timestamp: Date.now() - 5 * 3600000,
   },
   {
     id: "3",
@@ -57,6 +60,7 @@ const forumPosts = [
     likes: 193,
     time: "1 day ago",
     pinned: false,
+    timestamp: Date.now() - 86400000,
   },
   {
     id: "4",
@@ -68,6 +72,7 @@ const forumPosts = [
     likes: 1240,
     time: "3 days ago",
     pinned: true,
+    timestamp: Date.now() - 3 * 86400000,
   },
   {
     id: "5",
@@ -79,6 +84,7 @@ const forumPosts = [
     likes: 187,
     time: "4 days ago",
     pinned: false,
+    timestamp: Date.now() - 4 * 86400000,
   },
   {
     id: "6",
@@ -90,7 +96,64 @@ const forumPosts = [
     likes: 2100,
     time: "5 days ago",
     pinned: true,
+    timestamp: Date.now() - 5 * 86400000,
   },
+];
+
+// Generate additional posts for pagination demo
+const generateMorePosts = (count: number): ForumPost[] => {
+  const categories = ["Success Stories", "Tips & Configs", "Wellness", "Analytics", "Feature Requests", "Challenges"];
+  const authors = ["Alex Rivera", "Jamie L.", "Taylor Swift", "Jordan Lee", "Casey Kim", "Riley Wong"];
+  const titles = [
+    "My morning routine that doubled my productivity",
+    "How to handle interruptions in an open office",
+    "The Pomodoro technique actually works – here's proof",
+    "Using ForceFocus with ADHD: a personal journey",
+    "Team focus: how we improved sprint velocity by 40%",
+    "Deep work vs shallow work: recognizing the difference",
+  ];
+  const posts: ForumPost[] = [];
+  for (let i = 0; i < count; i++) {
+    posts.push({
+      id: `extra-${i}`,
+      title: `${titles[i % titles.length]} (${i + 1})`,
+      author: authors[i % authors.length],
+      avatar: `https://randomuser.me/api/portraits/${i % 2 === 0 ? "women" : "men"}/${i}.jpg`,
+      category: categories[i % categories.length],
+      replies: Math.floor(Math.random() * 100),
+      likes: Math.floor(Math.random() * 500),
+      time: `${Math.floor(Math.random() * 10) + 1} days ago`,
+      pinned: false,
+      timestamp: Date.now() - (Math.random() * 30 * 86400000),
+    });
+  }
+  return posts;
+};
+
+const allPosts = [...basePosts, ...generateMorePosts(15)];
+
+// Storage keys
+const STORAGE_KEYS = {
+  JOINED_COMMUNITY: "ff_community_joined",
+  JOINED_CHALLENGE: "ff_joined_challenge",
+  LIKED_POSTS: "ff_liked_posts",
+  USER_POSTS: "ff_user_posts",
+};
+
+const stats = [
+  { value: "2.4M+", label: "Community Members" },
+  { value: "80+", label: "Countries" },
+  { value: "12K+", label: "Forum Posts/Month" },
+  { value: "98%", label: "Questions Answered" },
+];
+
+const channels = [
+  { icon: Hash, name: "#general", desc: "General productivity chat, introductions, and announcements", members: "18,400", color: "text-blue-500", invite: "https://discord.gg/forcefocus-general" },
+  { icon: Hash, name: "#deep-work-tips", desc: "Share your best strategies for distraction-free focus", members: "12,200", color: "text-emerald-500", invite: "https://discord.gg/forcefocus-deepwork" },
+  { icon: Hash, name: "#habit-accountability", desc: "Daily check-ins and habit streak celebrations", members: "9,800", color: "text-pink-500", invite: "https://discord.gg/forcefocus-habits" },
+  { icon: Hash, name: "#ai-productivity", desc: "Discuss AI tools, automation, and smart workflows", members: "8,100", color: "text-purple-500", invite: "https://discord.gg/forcefocus-ai" },
+  { icon: Hash, name: "#team-productivity", desc: "For managers and team leads optimizing group performance", members: "5,400", color: "text-cyan-500", invite: "https://discord.gg/forcefocus-teams" },
+  { icon: Hash, name: "#student-focus", desc: "Study strategies, exam prep, and academic deep work", members: "14,300", color: "text-orange-500", invite: "https://discord.gg/forcefocus-students" },
 ];
 
 const categoryColors: Record<string, string> = {
@@ -111,11 +174,108 @@ const weeklyChallenge = {
 };
 
 export default function Community() {
-  const [likedPosts, setLikedPosts] = useState<string[]>([]);
   const [joined, setJoined] = useState(false);
+  const [joinedChallenge, setJoinedChallenge] = useState(false);
+  const [likedPosts, setLikedPosts] = useState<string[]>([]);
+  const [visiblePosts, setVisiblePosts] = useState<ForumPost[]>([]);
+  const [postLimit, setPostLimit] = useState(6);
+  const [isNewPostModalOpen, setIsNewPostModalOpen] = useState(false);
+  const [newPost, setNewPost] = useState({ title: "", category: "General", content: "" });
+  const [userPosts, setUserPosts] = useState<ForumPost[]>([]);
 
-  const toggleLike = (id: string) => {
-    setLikedPosts((prev) => prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]);
+  // Load persisted state
+  useEffect(() => {
+    const storedJoined = localStorage.getItem(STORAGE_KEYS.JOINED_COMMUNITY);
+    if (storedJoined === "true") setJoined(true);
+
+    const storedChallenge = localStorage.getItem(STORAGE_KEYS.JOINED_CHALLENGE);
+    if (storedChallenge === "true") setJoinedChallenge(true);
+
+    const storedLikes = localStorage.getItem(STORAGE_KEYS.LIKED_POSTS);
+    if (storedLikes) setLikedPosts(JSON.parse(storedLikes));
+
+    const storedUserPosts = localStorage.getItem(STORAGE_KEYS.USER_POSTS);
+    if (storedUserPosts) setUserPosts(JSON.parse(storedUserPosts));
+  }, []);
+
+  // Update visible posts when limit or posts change
+  useEffect(() => {
+    const allPostsWithUser = [...allPosts, ...userPosts].sort((a, b) => {
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
+      return b.timestamp - a.timestamp;
+    });
+    setVisiblePosts(allPostsWithUser.slice(0, postLimit));
+  }, [postLimit, userPosts]);
+
+  const saveLikes = (newLikes: string[]) => {
+    setLikedPosts(newLikes);
+    localStorage.setItem(STORAGE_KEYS.LIKED_POSTS, JSON.stringify(newLikes));
+  };
+
+  const toggleLike = (postId: string) => {
+    const newLikes = likedPosts.includes(postId)
+      ? likedPosts.filter(id => id !== postId)
+      : [...likedPosts, postId];
+    saveLikes(newLikes);
+    // Update like count in visible posts for immediate UI feedback
+    setVisiblePosts(prev =>
+      prev.map(post =>
+        post.id === postId
+          ? { ...post, likes: post.likes + (likedPosts.includes(postId) ? -1 : 1) }
+          : post
+      )
+    );
+  };
+
+  const handleJoinCommunity = () => {
+    setJoined(true);
+    localStorage.setItem(STORAGE_KEYS.JOINED_COMMUNITY, "true");
+    toast.success("Welcome to the ForceFocus Community!");
+  };
+
+  const handleJoinChallenge = () => {
+    if (joinedChallenge) {
+      toast.info("You've already joined this challenge!");
+      return;
+    }
+    setJoinedChallenge(true);
+    localStorage.setItem(STORAGE_KEYS.JOINED_CHALLENGE, "true");
+    toast.success(`You've joined the weekly challenge! ${weeklyChallenge.prize}`);
+  };
+
+  const handleCreatePost = () => {
+    if (!newPost.title.trim() || !newPost.content.trim()) {
+      toast.error("Please fill in both title and content.");
+      return;
+    }
+    const newForumPost: ForumPost = {
+      id: `user-${Date.now()}`,
+      title: newPost.title,
+      author: "You", // In real app, get from auth
+      avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&h=80&fit=crop&crop=face",
+      category: newPost.category,
+      replies: 0,
+      likes: 0,
+      time: "Just now",
+      pinned: false,
+      timestamp: Date.now(),
+    };
+    const updatedUserPosts = [newForumPost, ...userPosts];
+    setUserPosts(updatedUserPosts);
+    localStorage.setItem(STORAGE_KEYS.USER_POSTS, JSON.stringify(updatedUserPosts));
+    setIsNewPostModalOpen(false);
+    setNewPost({ title: "", category: "General", content: "" });
+    toast.success("Your post has been published!");
+  };
+
+  const loadMore = () => {
+    setPostLimit(prev => prev + 6);
+    toast.success("Loading more discussions...");
+  };
+
+  const openDiscordInvite = (inviteUrl: string) => {
+    window.open(inviteUrl, "_blank");
   };
 
   return (
@@ -142,12 +302,18 @@ export default function Community() {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <button
-              onClick={() => { setJoined(true); toast.success("Welcome to the ForceFocus Community!"); }}
-              className={`px-8 py-3 font-semibold rounded-xl transition-all duration-200 ${joined ? "bg-emerald-600 text-white" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+              onClick={handleJoinCommunity}
+              disabled={joined}
+              className={cn(
+                "px-8 py-3 font-semibold rounded-xl transition-all duration-200",
+                joined
+                  ? "bg-emerald-600 text-white cursor-default"
+                  : "bg-blue-600 hover:bg-blue-700 text-white"
+              )}
             >
               {joined ? "✓ Joined Community" : "Join Community — Free"}
             </button>
-            <a href="#forum" className="px-8 py-3 border border-white/20 text-white rounded-xl hover:bg-white/10 transition-colors font-medium">
+            <a href="#forum" className="px-8 py-3 border border-border text-foreground rounded-xl hover:bg-muted transition-colors font-medium">
               Browse Forum
             </a>
           </div>
@@ -194,10 +360,16 @@ export default function Community() {
                 </div>
               </div>
               <button
-                onClick={() => toast.success("You've joined the weekly challenge!")}
-                className="px-6 py-2.5 bg-white text-blue-700 font-semibold rounded-xl hover:bg-blue-50 transition-colors text-sm"
+                onClick={handleJoinChallenge}
+                disabled={joinedChallenge}
+                className={cn(
+                  "px-6 py-2.5 font-semibold rounded-xl transition-colors text-sm",
+                  joinedChallenge
+                    ? "bg-emerald-600 text-white cursor-default"
+                    : "bg-white text-blue-700 hover:bg-blue-50"
+                )}
               >
-                Join Challenge
+                {joinedChallenge ? "✓ Joined" : "Join Challenge"}
               </button>
             </div>
           </div>
@@ -215,10 +387,10 @@ export default function Community() {
             {channels.map((ch) => {
               const Icon = ch.icon;
               return (
-                <a
+                <button
                   key={ch.name}
-                  href="#"
-                  className="bg-card border border-border rounded-xl p-4 card-hover flex items-start gap-3 group"
+                  onClick={() => openDiscordInvite(ch.invite)}
+                  className="bg-card border border-border rounded-xl p-4 card-hover flex items-start gap-3 group text-left w-full"
                 >
                   <Icon className={`w-5 h-5 mt-0.5 flex-shrink-0 ${ch.color}`} />
                   <div className="min-w-0">
@@ -226,14 +398,18 @@ export default function Community() {
                     <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{ch.desc}</p>
                     <p className="text-xs text-muted-foreground mt-1.5">{ch.members} members</p>
                   </div>
-                </a>
+                  <ExternalLink className="w-3.5 h-3.5 text-muted-foreground ml-auto flex-shrink-0" />
+                </button>
               );
             })}
           </div>
           <div className="text-center mt-6">
-            <a href="#" className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 font-medium hover:underline">
+            <button
+              onClick={() => window.open("https://discord.gg/forcefocus", "_blank")}
+              className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 font-medium hover:underline"
+            >
               Join our Discord server <ExternalLink className="w-3.5 h-3.5" />
-            </a>
+            </button>
           </div>
         </div>
       </section>
@@ -247,15 +423,15 @@ export default function Community() {
               <p className="text-muted-foreground text-sm mt-1">Discussions, insights, and announcements</p>
             </div>
             <button
-              onClick={() => toast.info("Forum post creation coming soon!")}
-              className="btn-primary text-sm px-4 py-2"
+              onClick={() => setIsNewPostModalOpen(true)}
+              className="btn-primary text-sm px-4 py-2 flex items-center gap-1"
             >
-              New Post
+              <Plus className="w-4 h-4" /> New Post
             </button>
           </div>
 
           <div className="space-y-3">
-            {forumPosts.map((post) => (
+            {visiblePosts.map((post) => (
               <div key={post.id} className="bg-card border border-border rounded-xl p-5 card-hover">
                 <div className="flex items-start gap-4">
                   <img src={post.avatar} alt={post.author} className="w-9 h-9 rounded-full object-cover flex-shrink-0" />
@@ -264,11 +440,16 @@ export default function Community() {
                       {post.pinned && (
                         <span className="px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-xs font-semibold rounded">📌 Pinned</span>
                       )}
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${categoryColors[post.category]}`}>{post.category}</span>
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${categoryColors[post.category] || "bg-gray-100 text-gray-700"}`}>
+                        {post.category}
+                      </span>
                     </div>
-                    <h3 className="text-sm font-semibold text-foreground leading-snug mb-1 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors">
+                    <button
+                      onClick={() => toast.info("Post detail page coming soon!")}
+                      className="text-sm font-semibold text-foreground leading-snug mb-1 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors text-left"
+                    >
                       {post.title}
-                    </h3>
+                    </button>
                     <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                       <span className="font-medium text-foreground/70">{post.author}</span>
                       <span>{post.time}</span>
@@ -292,13 +473,81 @@ export default function Community() {
             ))}
           </div>
 
-          <div className="text-center mt-8">
-            <button className="inline-flex items-center gap-2 px-6 py-3 border border-border rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:border-blue-500 transition-all duration-200">
-              Load more discussions <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
+          {visiblePosts.length < allPosts.length + userPosts.length && (
+            <div className="text-center mt-8">
+              <button
+                onClick={loadMore}
+                className="inline-flex items-center gap-2 px-6 py-3 border border-border rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:border-blue-500 transition-all duration-200"
+              >
+                Load more discussions <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
       </section>
+
+      {/* New Post Modal */}
+      {isNewPostModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl animate-fade-in">
+            <div className="flex items-center justify-between p-5 border-b border-border">
+              <h3 className="font-display text-xl font-bold text-foreground">Create New Post</h3>
+              <button onClick={() => setIsNewPostModalOpen(false)} className="p-1 rounded-lg hover:bg-muted">
+                <X className="w-5 h-5 text-muted-foreground" />
+              </button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1">Title</label>
+                <input
+                  type="text"
+                  value={newPost.title}
+                  onChange={(e) => setNewPost(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="What's your question or insight?"
+                  className="w-full px-3 py-2 border border-input rounded-xl bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1">Category</label>
+                <select
+                  value={newPost.category}
+                  onChange={(e) => setNewPost(prev => ({ ...prev, category: e.target.value }))}
+                  className="w-full px-3 py-2 border border-input rounded-xl bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  {Object.keys(categoryColors).map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                  <option value="General">General</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1">Content</label>
+                <textarea
+                  value={newPost.content}
+                  onChange={(e) => setNewPost(prev => ({ ...prev, content: e.target.value }))}
+                  rows={4}
+                  placeholder="Share your thoughts..."
+                  className="w-full px-3 py-2 border border-input rounded-xl bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 p-5 border-t border-border">
+              <button
+                onClick={() => setIsNewPostModalOpen(false)}
+                className="px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-muted"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreatePost}
+                className="px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 flex items-center gap-2"
+              >
+                <Send className="w-4 h-4" /> Publish
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { useAuth } from "@/hooks/useAuth";
 
 const team = [
   {
@@ -94,6 +95,7 @@ const milestones = [
 ];
 
 export default function About() {
+  const { isAuthenticated } = useAuth();
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -244,7 +246,7 @@ export default function About() {
             Whether as a user, team member, or investor — there are many ways to be part of ForceFocus.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/register" className="btn-primary">Start for Free</Link>
+            <Link to={isAuthenticated ? "/dashboard" : "/register"} className="btn-primary">Start for Free</Link>
             <Link to="/contact" className="px-6 py-3 border border-white/20 text-white rounded-xl hover:bg-white/10 transition-colors font-medium">
               Contact Us
             </Link>

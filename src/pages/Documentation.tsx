@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   BookOpen, Code2, Timer, Target, Repeat, Shield, BarChart3, Users,
@@ -13,6 +13,7 @@ const sections = [
     id: "getting-started",
     icon: Zap,
     title: "Getting Started",
+    description: "Essential guides for setting up ForceFocus and configuring your workspace.",
     color: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400",
     articles: [
       { title: "Quick Start Guide", time: "5 min", popular: true },
@@ -27,6 +28,7 @@ const sections = [
     id: "focus-sessions",
     icon: Timer,
     title: "Focus Sessions",
+    description: "Master the core feature of ForceFocus with these guides on running sessions.",
     color: "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400",
     articles: [
       { title: "Starting Your First Focus Session", time: "3 min", popular: true },
@@ -41,6 +43,7 @@ const sections = [
     id: "tasks-goals",
     icon: Target,
     title: "Tasks & Goals",
+    description: "Learn how to organize your workload and track long-term objectives.",
     color: "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400",
     articles: [
       { title: "Creating and Organizing Tasks", time: "5 min" },
@@ -55,6 +58,7 @@ const sections = [
     id: "habits",
     icon: Repeat,
     title: "Habit Builder",
+    description: "Build sustainable routines with our behavioral science based habit tracker.",
     color: "bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400",
     articles: [
       { title: "Creating Your First Habit", time: "3 min", popular: true },
@@ -68,6 +72,7 @@ const sections = [
     id: "distraction-blocker",
     icon: Shield,
     title: "Distraction Blocker",
+    description: "Configure system-level and browser blocks to protect your attention.",
     color: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400",
     articles: [
       { title: "Setting Up Your Block List", time: "5 min", popular: true },
@@ -81,6 +86,7 @@ const sections = [
     id: "analytics",
     icon: BarChart3,
     title: "Analytics",
+    description: "Understand your performance metrics and identify productivity trends.",
     color: "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400",
     articles: [
       { title: "Understanding Your Productivity Score", time: "5 min" },
@@ -93,6 +99,7 @@ const sections = [
     id: "team",
     icon: Users,
     title: "Team Workspaces",
+    description: "Collaborate effectively and align your team's focus goals.",
     color: "bg-cyan-100 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-400",
     articles: [
       { title: "Creating a Team Workspace", time: "5 min", popular: true },
@@ -106,6 +113,7 @@ const sections = [
     id: "api",
     icon: Code2,
     title: "API Reference",
+    description: "Integrate ForceFocus deeply into your own custom workflows and apps.",
     color: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
     articles: [
       { title: "Authentication & API Keys", time: "5 min" },
@@ -161,9 +169,83 @@ function CodeBlock({ code }: { code: string }) {
   );
 }
 
+function DocSection({ section }: { section: any }) {
+  const [isExpanded, setIsExpanded] = useState(true);
+  const Icon = section.icon;
+
+  return (
+    <div id={section.id} className="scroll-mt-24">
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full text-left group mb-5 focus:outline-none"
+      >
+        <div className="flex items-center justify-between gap-3 mb-2">
+          <div className="flex items-center gap-3">
+            <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${section.color}`}>
+              <Icon className="w-4 h-4" />
+            </div>
+            <h2 className="font-display text-xl font-bold text-foreground">{section.title}</h2>
+          </div>
+          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center group-hover:bg-muted/80 transition-colors">
+            <ChevronRight className={`w-5 h-5 text-muted-foreground transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`} />
+          </div>
+        </div>
+        {section.description && (
+          <p className="text-sm text-muted-foreground ml-12">{section.description}</p>
+        )}
+      </button>
+
+      {isExpanded && (
+        <div className="grid sm:grid-cols-2 gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+          {section.articles.map((article: any) => (
+            <a
+              key={article.title}
+              href="#"
+              className="flex items-center justify-between p-4 bg-card border border-border rounded-xl hover:border-blue-500/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all duration-200 group/link"
+            >
+              <div className="flex items-center gap-3">
+                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover/link:text-blue-600 dark:group-hover/link:text-blue-400 transition-colors" />
+                <div>
+                  <span className="text-sm font-medium text-foreground group-hover/link:text-blue-600 dark:group-hover/link:text-blue-400 transition-colors">
+                    {article.title}
+                  </span>
+                  {article.popular && (
+                    <span className="ml-2 px-1.5 py-0.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-xs font-medium rounded">Popular</span>
+                  )}
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground flex-shrink-0 ml-3">{article.time}</span>
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Documentation() {
   const [search, setSearch] = useState("");
   const [activeSection, setActiveSection] = useState("getting-started");
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: "-20% 0px -80% 0px" }
+    );
+
+    sections.forEach((s) => {
+      const el = document.getElementById(s.id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   const filtered = sections.map((s) => ({
     ...s,
@@ -213,8 +295,9 @@ export default function Documentation() {
                 {sections.map((s) => {
                   const Icon = s.icon;
                   return (
-                    <button
+                    <a
                       key={s.id}
+                      href={`#${s.id}`}
                       onClick={() => setActiveSection(s.id)}
                       className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left ${
                         activeSection === s.id
@@ -223,8 +306,13 @@ export default function Documentation() {
                       }`}
                     >
                       <Icon className="w-4 h-4 flex-shrink-0" />
-                      {s.title}
-                    </button>
+                      <div className="flex flex-col">
+                        <span>{s.title}</span>
+                        {s.description && (
+                          <span className="text-xs opacity-70 font-normal">{s.description}</span>
+                        )}
+                      </div>
+                    </a>
                   );
                 })}
               </div>
@@ -255,41 +343,9 @@ export default function Documentation() {
               )}
 
               {/* Doc sections */}
-              {filtered.map((section) => {
-                const Icon = section.icon;
-                return (
-                  <div key={section.id} id={section.id} className="scroll-mt-24">
-                    <div className="flex items-center gap-3 mb-5">
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${section.color}`}>
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      <h2 className="font-display text-xl font-bold text-foreground">{section.title}</h2>
-                    </div>
-                    <div className="grid sm:grid-cols-2 gap-3">
-                      {section.articles.map((article) => (
-                        <a
-                          key={article.title}
-                          href="#"
-                          className="flex items-center justify-between p-4 bg-card border border-border rounded-xl hover:border-blue-500/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all duration-200 group"
-                        >
-                          <div className="flex items-center gap-3">
-                            <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
-                            <div>
-                              <span className="text-sm font-medium text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                {article.title}
-                              </span>
-                              {article.popular && (
-                                <span className="ml-2 px-1.5 py-0.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-xs font-medium rounded">Popular</span>
-                              )}
-                            </div>
-                          </div>
-                          <span className="text-xs text-muted-foreground flex-shrink-0 ml-3">{article.time}</span>
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
+              {filtered.map((section) => (
+                <DocSection key={section.id} section={section} />
+              ))}
 
               {/* API Code Example */}
               {!search && (

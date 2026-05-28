@@ -6,24 +6,34 @@ import Footer from "@/components/layout/Footer";
 import { FAQ_ITEMS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
+// Extended FAQs with explicit categories
 const extraFaqs = [
   {
     question: "How do I get started with ForceFocus?",
     answer: "Getting started is easy. Create a free account, complete the 5-minute productivity assessment, and ForceFocus will build a personalized plan based on your goals and work style. Your first focus session can start within minutes of signing up.",
+    category: "Getting Started",
   },
   {
     question: "Can I import my existing tasks and projects?",
     answer: "Yes. ForceFocus supports CSV import for tasks and integrates with Asana, Jira, Notion, Trello, and Linear to import existing projects. You can also connect Google Tasks and Microsoft To-Do.",
+    category: "Features",
   },
   {
     question: "Does ForceFocus work offline?",
     answer: "The focus timer and local task management work offline. Your data syncs automatically when you reconnect. Analytics, AI coaching, and team features require an internet connection.",
+    category: "Technical",
   },
 ];
 
-const allFaqs = [...FAQ_ITEMS, ...extraFaqs];
+// Ensure all FAQ_ITEMS have a category (fallback to "General" if missing)
+const normalizedFaqItems = FAQ_ITEMS.map(item => ({
+  ...item,
+  category: (item as any).category || "General",
+}));
 
-const categories = ["All", "Getting Started", "Features", "Pricing", "Privacy", "Technical", "Teams"];
+const allFaqs = [...normalizedFaqItems, ...extraFaqs];
+
+const categories = ["All", "Getting Started", "Features", "Pricing", "Privacy", "Technical", "Teams", "General"];
 
 export default function FAQ() {
   const [search, setSearch] = useState("");
@@ -32,16 +42,17 @@ export default function FAQ() {
 
   const filtered = allFaqs.filter(
     (item) =>
-      !search ||
-      item.question.toLowerCase().includes(search.toLowerCase()) ||
-      item.answer.toLowerCase().includes(search.toLowerCase())
+      (activeCategory === "All" || item.category === activeCategory) &&
+      (!search ||
+        item.question.toLowerCase().includes(search.toLowerCase()) ||
+        item.answer.toLowerCase().includes(search.toLowerCase()))
   );
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Hero */}
+      {/* Hero section - unchanged */}
       <section className="relative pt-32 pb-16 overflow-hidden bg-gradient-to-br from-blue-50 via-background to-emerald-50 dark:bg-[#0A0F1E]">
         <div className="absolute top-1/3 right-1/3 w-64 h-64 bg-blue-500/10 dark:bg-blue-600/10 rounded-full blur-3xl" />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">
