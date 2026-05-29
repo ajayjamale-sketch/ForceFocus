@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Bell, Check, Trash2, Zap, Heart, Trophy } from "lucide-react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 // Mock notifications for now
@@ -27,19 +27,19 @@ export function NotificationPanel() {
   };
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <button className="btn-ghost w-11 h-11 flex items-center justify-center rounded-xl relative" aria-label="Notifications">
-          <Bell className="w-5 h-5" />
+    <Popover>
+      <PopoverTrigger asChild>
+        <button className="btn-ghost w-11 h-11 flex items-center justify-center rounded-xl relative hover:bg-muted" aria-label="Notifications">
+          <Bell className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors" />
           {unreadCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-blue-500 border-2 border-background rounded-full" />
+            <span className="absolute top-2 right-2.5 w-2.5 h-2.5 bg-blue-500 border-2 border-background rounded-full" />
           )}
         </button>
-      </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-md">
-        <SheetHeader className="space-y-4">
+      </PopoverTrigger>
+      <PopoverContent className="w-[380px] p-0 mr-4 shadow-xl border-border/50" align="end" sideOffset={8}>
+        <div className="p-4 border-b border-border/50 space-y-1">
           <div className="flex items-center justify-between">
-            <SheetTitle>Notifications</SheetTitle>
+            <h4 className="font-semibold text-foreground">Notifications</h4>
             <div className="flex items-center gap-2">
               <button onClick={markAllAsRead} className="text-xs text-muted-foreground hover:text-foreground transition-colors" title="Mark all as read">
                 <Check className="w-4 h-4" />
@@ -49,15 +49,16 @@ export function NotificationPanel() {
               </button>
             </div>
           </div>
-          <SheetDescription>
+          <p className="text-xs text-muted-foreground">
             You have {unreadCount} unread messages.
-          </SheetDescription>
-        </SheetHeader>
-        <div className="mt-6 flex flex-col gap-4 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2 pb-4">
+          </p>
+        </div>
+        
+        <div className="flex flex-col max-h-[400px] overflow-y-auto">
           {notifications.length === 0 ? (
             <div className="text-center text-muted-foreground py-8">
               <Bell className="w-8 h-8 mx-auto mb-3 opacity-20" />
-              <p>No new notifications</p>
+              <p className="text-sm">No new notifications</p>
             </div>
           ) : (
             notifications.map((notification) => {
@@ -66,29 +67,29 @@ export function NotificationPanel() {
                 <div 
                   key={notification.id} 
                   className={cn(
-                    "flex gap-4 p-4 rounded-xl border transition-all duration-200 cursor-pointer",
-                    notification.read ? "bg-card border-border/50" : "bg-blue-500/5 border-blue-500/20"
+                    "flex gap-4 p-4 border-b border-border/30 last:border-0 transition-all duration-200 cursor-pointer hover:bg-muted/30",
+                    notification.read ? "opacity-70 bg-transparent" : "bg-blue-500/5"
                   )}
                   onClick={() => markAsRead(notification.id)}
                 >
                   <div className={cn(
                     "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0",
-                    notification.type === "success" ? "bg-emerald-500/10 text-emerald-500" :
-                    notification.type === "warning" ? "bg-orange-500/10 text-orange-500" :
-                    "bg-blue-500/10 text-blue-500"
+                    notification.type === "success" ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" :
+                    notification.type === "warning" ? "bg-orange-500/10 text-orange-600 dark:text-orange-400" :
+                    "bg-blue-500/10 text-blue-600 dark:text-blue-400"
                   )}>
                     <Icon className="w-5 h-5" />
                   </div>
-                  <div className="flex-1 space-y-1">
+                  <div className="flex-1 space-y-1 overflow-hidden">
                     <div className="flex items-center justify-between gap-2">
-                      <p className={cn("text-sm font-medium", !notification.read && "text-foreground")}>
+                      <p className={cn("text-sm font-medium truncate", !notification.read ? "text-foreground" : "text-muted-foreground")}>
                         {notification.title}
                       </p>
                       <span className="text-xs text-muted-foreground flex-shrink-0">
                         {notification.time}
                       </span>
                     </div>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
+                    <p className="text-xs text-muted-foreground line-clamp-2">
                       {notification.description}
                     </p>
                   </div>
@@ -100,7 +101,7 @@ export function NotificationPanel() {
             })
           )}
         </div>
-      </SheetContent>
-    </Sheet>
+      </PopoverContent>
+    </Popover>
   );
 }
