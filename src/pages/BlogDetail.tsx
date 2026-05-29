@@ -92,7 +92,7 @@ export default function BlogDetail() {
         </div>
 
         {/* Article Content */}
-        <article className="max-w-3xl mx-auto px-4 sm:px-6 prose prose-lg dark:prose-invert prose-blue max-w-none">
+        <article className="max-w-3xl mx-auto px-4 sm:px-6 prose prose-lg dark:prose-invert prose-blue">
           {post.content ? (
             <div dangerouslySetInnerHTML={{ __html: post.content }} />
           ) : (

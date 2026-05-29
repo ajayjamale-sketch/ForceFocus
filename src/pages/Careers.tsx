@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, Clock, Briefcase, ArrowRight, Zap, Users, Heart, TrendingUp, Globe, Coffee, Star } from "lucide-react";
+import { MapPin, Clock, Briefcase, ArrowRight, Zap, Users, Heart, TrendingUp, Globe, Coffee, Star, X } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useState } from "react";
@@ -115,6 +115,44 @@ export default function Careers() {
   const departments = ["All", ...Array.from(new Set(openRoles.map((r) => r.department)))];
 
   const filtered = activeDept === "All" ? openRoles : openRoles.filter((r) => r.department === activeDept);
+
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<typeof openRoles[0] | null>(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: ""
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleApplyClick = (role: typeof openRoles[0]) => {
+    setSelectedRole(role);
+    setModalOpen(true);
+    setFormData({ name: "", email: "", message: "" });
+  };
+
+  const handleGeneralApply = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setSelectedRole(null);
+    setModalOpen(true);
+    setFormData({ name: "", email: "", message: "" });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email) {
+      toast.error("Please fill in your name and email.");
+      return;
+    }
+    setIsSubmitting(true);
+    await new Promise(resolve => setTimeout(resolve, 800));
+    const roleText = selectedRole ? `for ${selectedRole.title}` : "a general application";
+    toast.success(`Application ${roleText} received! We'll be in touch soon.`);
+    setModalOpen(false);
+    setIsSubmitting(false);
+    setSelectedRole(null);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -232,7 +270,7 @@ export default function Careers() {
                     </div>
                   </div>
                   <button
-                    onClick={() => toast.success(`Application for ${role.title} submitted!`)}
+                    onClick={() => handleApplyClick(role)}
                     className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-all duration-200 flex-shrink-0"
                   >
                     Apply Now
@@ -249,16 +287,79 @@ export default function Careers() {
             <p className="text-sm text-muted-foreground mb-5">
               We're always looking for exceptional people. Send us your CV and a note about what you'd build at ForceFocus.
             </p>
-            <a
-              href="mailto:careers@forcefocus.app"
+            <button
+              onClick={handleGeneralApply}
               className="btn-primary inline-flex items-center gap-2"
             >
               Send General Application
               <ArrowRight className="w-4 h-4" />
-            </a>
+            </button>
           </div>
         </div>
       </section>
+
+      {/* Modal */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-center p-5 border-b border-border">
+              <h3 className="font-display text-xl font-bold text-foreground">
+                {selectedRole ? `Apply for ${selectedRole.title}` : "General Application"}
+              </h3>
+              <button
+                onClick={() => setModalOpen(false)}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleSubmit} className="p-5 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">Full Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full px-4 py-2 rounded-lg bg-background border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  placeholder="Alex Johnson"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">Email Address *</label>
+                <input
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full px-4 py-2 rounded-lg bg-background border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  placeholder="alex@example.com"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">Message / Resume Link</label>
+                <textarea
+                  rows={3}
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  className="w-full px-4 py-2 rounded-lg bg-background border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  placeholder="Why are you interested? (LinkedIn, GitHub, or resume link also welcome)"
+                />
+              </div>
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isSubmitting ? "Submitting..." : "Submit Application"}
+                  {!isSubmitting && <ArrowRight className="w-4 h-4" />}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

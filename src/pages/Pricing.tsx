@@ -6,6 +6,8 @@ import Footer from "@/components/layout/Footer";
 import { PRICING_PLANS, FAQ_ITEMS } from "@/lib/constants";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { PaymentModal } from "@/components/features/PaymentModal";
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [open, setOpen] = useState(false);
@@ -34,16 +36,20 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
 
 export default function Pricing() {
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState("");
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const handlePlanClick = (planId: string) => {
+    if (planId !== "free") {
+      setSelectedPlanId(planId);
+      setIsPaymentModalOpen(true);
+      return;
+    }
+
     if (isAuthenticated) {
-      if (planId === "free") {
-        navigate("/dashboard");
-      } else {
-        navigate("/dashboard?upgrade=" + planId);
-      }
+      navigate("/dashboard");
     } else {
       navigate("/register?plan=" + planId);
     }
@@ -362,6 +368,11 @@ export default function Pricing() {
         </div>
       </section>
 
+      <PaymentModal 
+        isOpen={isPaymentModalOpen} 
+        onClose={() => setIsPaymentModalOpen(false)} 
+        planId={selectedPlanId} 
+      />
       <Footer />
     </div>
   );

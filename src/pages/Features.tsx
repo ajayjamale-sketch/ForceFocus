@@ -143,9 +143,9 @@ export default function Features() {
             <Link to={isAuthenticated ? "/dashboard" : "/register"} className="btn-primary inline-flex items-center gap-2">
               Start Free Trial <ArrowRight className="w-4 h-4" />
             </Link>
-            <button className="px-6 py-3 border border-primary text-primary rounded-xl hover:bg-primary/10 transition-colors font-medium inline-flex items-center gap-2">
+            <Link to="/#dashboard-preview" className="px-6 py-3 border border-primary text-primary rounded-xl hover:bg-primary/10 transition-colors font-medium inline-flex items-center gap-2">
               <Play className="w-4 h-4" /> Watch Demo
-            </button>
+            </Link>
           </div>
         </div>
       </section>
